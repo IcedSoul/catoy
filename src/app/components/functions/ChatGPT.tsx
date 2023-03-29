@@ -3,26 +3,31 @@
 import {
     ActionIcon,
     Container,
+    createStyles,
     Flex,
     Grid,
+    Paper,
     rem,
+    Select,
+    SelectItem,
+    Space,
     Stack,
     Textarea,
-    Paper,
-    createStyles, ThemeIcon, Space, Select, SelectItem
+    ThemeIcon
 } from '@mantine/core';
 
 import {IconBrandOpenai, IconBrandTelegram, IconUfo} from "@tabler/icons-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 import './markdown-styles.css'
-import {Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import {tomorrow} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-import React, {useEffect, useState, use} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {CodeProps} from "react-markdown/lib/ast-to-react";
-import {ChatMessage, MessageSource} from "@/common/ChatGPTCommon";
+import {ChatMessage, HttpMethod, MessageSource} from "@/common/ChatGPTCommon";
 import {Model} from "openai/api";
+import useSWR, {SWRConfiguration} from 'swr'
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -75,42 +80,114 @@ const useStyles = createStyles((theme) => ({
     }
 }));
 
-const getMessages = async () => {
-    return await fetch("/api/chatgpt/message")
-        .then<Array<ChatMessage>>(response => response.json())
+const swrConfig: SWRConfiguration = {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false
 }
 
-const getModels = async () => {
-    return fetch("/api/openai/models")
-        .then<Array<Model>>(response => response.json())
-}
-
-const fetchMap = new Map<string, any>();
-function queryClient<QueryResult>(
-    name:string,
-    query: () => Promise<QueryResult>
-) :Promise<QueryResult> {
-    if(!fetchMap.has(name)){
-        fetchMap.set(name, query())
-    }
-    return fetchMap.get(name)
-}
+// const fetchMap = new Map<string, any>();
+// function queryClient<QueryResult>(
+//     name:string,
+//     query: () => Promise<QueryResult>,
+// ) :Promise<QueryResult> {
+//     if(!fetchMap.has(name)){
+//         fetchMap.set(name, query())
+//     }
+//     return fetchMap.get(name)
+// }
 
 export default function ChatGPT() {
     const { classes, cx } = useStyles()
-    // const [messages, setMessages] = useState<Array<ChatMessage>>([])
-    // const [models, setModels] = useState<Array<Model>>([])
-    const messages = use(queryClient<Array<ChatMessage>>("messages", getMessages))
-    const models = use(queryClient<Array<Model>>("models", getModels))
+    const messageTextArea = useRef<HTMLTextAreaElement>(null)
+    const [currentModel, setCurrentModel] = useState<string | null>(null);
+    const [messages, setMessages] = useState<Array<ChatMessage>>([])
+    const [modelLists, setModelLists] = useState<Array<SelectItem>>([])
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    // const modelLists:Array<SelectItem> = use(queryClient<Array<SelectItem>>("models", getModels))
+    // const messages: Array<ChatMessage> = use(queryClient<Array<ChatMessage>>("messages", getMessages))
 
     useEffect(() => {
-        console.log("xiaofeng")
-    })
+        const getModels = async () => {
+            return await fetch("/api/openai/models")
+                .then<Array<Model>>(response => response.json())
+                .then<Array<SelectItem>>(models => {
+                    return models.map(model => {
+                        return {label: model.id, value: model.id}
+                    })
+                })
+        }
+        const getMessages = async () => {
+            return await fetch("/api/chatgpt/message")
+                .then<Array<ChatMessage>>(response => response.json())
 
-    const modelLists:Array<SelectItem> = models.map((model) => {return { label: model.id, value: model.id }})
-    const currentModel: SelectItem | null = modelLists.at(0) || null
+        }
+        getModels().then((models) => {
+            setCurrentModel(models.at(0)?.value || null)
+            setModelLists(models)
+        })
+        getMessages().then(setMessages)
+    }, [])
+    // const { data: modelLists } = useSWR("models", async () => {
+    //     return await fetch("/api/openai/models")
+    //         .then<Array<Model>>(response => response.json())
+    //         .then<Array<SelectItem>>(models => {
+    //             const modelList = models.map((model) => {
+    //                 return {label: model.id, value: model.id}
+    //             })
+    //             setCurrentModel(modelList.at(0)?.value || null)
+    //             return modelList
+    //         })
+    // }, swrConfig)
 
-    const messageContents = messages.map((message, key) => (
+    // const { data: historyMessages } = useSWR("messages", async () => {
+    //     return await fetch("/api/chatgpt/message")
+    //         .then<Array<ChatMessage>>(response => response.json())
+    // }, swrConfig)
+
+    const sendMessage = async (model: string, message: string) => {
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        const body = {
+            model,
+            message
+        }
+        const requestInit: RequestInit = {
+            method: HttpMethod.POST,
+            headers,
+            body: JSON.stringify(body)
+        }
+        await fetch("api/openai/message", requestInit)
+            .then(response => response.json())
+            .then(response => {
+                const message: ChatMessage = {
+                    from: MessageSource.CHAT_GPT,
+                    content: response.content
+                }
+                setMessages(messages => [...messages, message])
+            })
+    }
+
+    const onTextAreaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if(event.key === 'Enter' && event.altKey){
+            event.preventDefault()
+            onSendMessage()
+        }
+    }
+
+    const onSendMessage = () => {
+        const message = messageTextArea.current?.value
+        if(!message) { return }
+        messageTextArea.current ? messageTextArea.current.value = '' : null
+        const sendChatMessage: ChatMessage = {
+            from: MessageSource.ME,
+            content: message
+        }
+        setMessages(messages => [...messages, sendChatMessage])
+        currentModel ? sendMessage(currentModel, message) : null
+    }
+
+    const messageContents = messages?.map((message, key) => (
         <Paper
             withBorder
             radius="md"
@@ -152,7 +229,12 @@ export default function ChatGPT() {
                         </ThemeIcon>
                     )
                 }
-                <Container fluid>
+                <Flex
+                    w="100%"
+                    align="flex-start"
+                    justify={message.from === MessageSource.CHAT_GPT ? "flex-start" : "flex-end"}
+                    wrap="wrap"
+                >
                     <ReactMarkdown
                         className="markdown-body"
                         remarkPlugins={[remarkGfm]}
@@ -178,7 +260,7 @@ export default function ChatGPT() {
                     >
                         {message.content}
                     </ReactMarkdown>
-                </Container>
+                </Flex>
                 <Space w="lg"/>
             </Flex>
         </Paper>
@@ -199,8 +281,9 @@ export default function ChatGPT() {
                     <Select
                         w="80%"
                         label="Model"
-                        defaultValue={currentModel?.value}
-                        data={modelLists}
+                        value={currentModel}
+                        data={modelLists || []}
+                        onChange={setCurrentModel}
                     />
                 </Stack>
                 <Stack
@@ -214,14 +297,16 @@ export default function ChatGPT() {
                     <Grid justify="center" align="center" w="100%" grow>
                         <Grid.Col span={11}>
                             <Textarea
-                                placeholder="Ask ChatGPT"
+                                ref={messageTextArea}
+                                placeholder="Ask ChatGPT (Alt + Enter or Click Send Icon to send message)"
                                 autosize
                                 minRows={1}
                                 maxRows={10}
+                                onKeyDown={onTextAreaKeyDown}
                             />
                         </Grid.Col>
                         <Grid.Col span={1}>
-                            <ActionIcon variant="filled" size="2rem" w="100%">
+                            <ActionIcon variant="filled" size="2rem" w="100%" onClick={onSendMessage}>
                                 <IconBrandTelegram size="1rem" />
                             </ActionIcon>
                         </Grid.Col>

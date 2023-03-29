@@ -7,6 +7,7 @@ import {
 } from '@mantine/core';
 import MainNavBar from "./layout/MainNavBar";
 import ChatGPT from "./functions/ChatGPT";
+import React from "react";
 
 export default function Main() {
     const theme = useMantineTheme();
