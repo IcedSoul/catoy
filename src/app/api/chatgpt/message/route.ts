@@ -1,4 +1,4 @@
-import {ChatMessage, MessageSource} from "../../../common/ChatGPTCommon";
+import {ChatMessage, MessageSource} from "../../../../common/ChatGPTCommon";
 import {NextResponse} from "next/server";
 
 

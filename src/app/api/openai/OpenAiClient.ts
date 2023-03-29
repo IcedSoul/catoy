@@ -7,8 +7,9 @@ const configuration = new Configuration({
 
 
 class OpenAiClient{
-    openai = new OpenAIApi(configuration)
+    openai: OpenAIApi
     constructor() {
+        this.openai = new OpenAIApi(configuration)
     }
 
     public listModels = async () => {

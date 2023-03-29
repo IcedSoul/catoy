@@ -1,3 +1,11 @@
+import {Configuration, OpenAIApi} from "openai";
+
+const configuration = new Configuration({
+    organization: 'org-dgp2h4U3CLUur0pCnGGzkKBp',
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+export const OpenAiApi = new OpenAIApi(configuration)
 
 export enum MessageSource {
     ME,
