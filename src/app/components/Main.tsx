@@ -2,7 +2,6 @@
 
 import {
     AppShell,
-    Text,
     useMantineTheme,
 } from '@mantine/core';
 import MainNavBar from "./layout/MainNavBar";
@@ -16,11 +15,13 @@ export default function Main() {
             styles={{
                 main: {
                     background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
+                    height: '100vh'
                 },
             }}
             navbarOffsetBreakpoint="sm"
             asideOffsetBreakpoint="sm"
             navbar={<MainNavBar/>}
+            h="100%"
         >
             <ChatGPT/>
         </AppShell>

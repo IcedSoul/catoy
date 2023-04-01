@@ -1,18 +1,9 @@
-import {Configuration, OpenAIApi} from "openai";
-
-const configuration = new Configuration({
-    organization: 'org-dgp2h4U3CLUur0pCnGGzkKBp',
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
-export const OpenAiApi = new OpenAIApi(configuration)
-
 export enum MessageSource {
-    ME,
-    CHAT_GPT
+    USER = "user",
+    ASSISTANT = "assistant"
 }
 export interface ChatMessage {
-    from: MessageSource,
+    role: MessageSource,
     content: string
 }
 
@@ -25,3 +16,7 @@ export enum HttpMethod {
     DELETE = "DELETE",
     PATCH = "PATCH"
 }
+
+export const decoder = new TextDecoder()
+export const encoder = new TextEncoder()
+
