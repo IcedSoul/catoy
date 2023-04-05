@@ -1,0 +1,41 @@
+version: '3'
+services:
+  db:
+    image: mongo
+    ports:
+      - '27017:27017'
+    command: [ --auth ]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./mongo:/data/db
+    networks:
+      - next-network
+
+  catoy:
+    build: .
+    image: uswccr.ccs.tencentyun.com/xiaofeng/catoy:v0.1
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      OPENAI_API_KEY: "xxx"
+    networks:
+      - next-network
+
+  gateway:
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./cert:/etc/nginx/cert
+    networks:
+      - next-network
+
+networks:
+  next-network:
+    driver: bridge

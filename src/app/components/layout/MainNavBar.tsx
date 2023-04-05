@@ -12,7 +12,6 @@ import {
     UnstyledButton
 } from "@mantine/core";
 import {IconBrandHipchat, IconCheckbox, IconPlus, IconSearch, IconUser} from "@tabler/icons-react";
-import {useState} from "react";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -127,8 +126,8 @@ const useStyles = createStyles((theme) => ({
 
 const links = [
     { icon: IconBrandHipchat, label: 'ChatGPT' },
-    { icon: IconCheckbox, label: 'Tasks' },
-    { icon: IconUser, label: 'Contacts' },
+    // { icon: IconCheckbox, label: 'Tasks' },
+    // { icon: IconUser, label: 'Contacts' },
 ];
 
 const toys = [
@@ -142,11 +141,12 @@ const toys = [
     { emoji: '🙈', label: 'Debts' },
     { emoji: '💁‍♀️', label: 'Customers' },
 ];
+type Props = {
+    opened: boolean
+}
 
-export default function MainNavBar() {
+export default function MainNavBar({ opened }: Props) {
     const { classes: styles } = useStyles();
-
-    const [opened, setOpened] = useState(false);
 
     const mainLinks = links.map((link) => (
         <UnstyledButton key={link.label} className={styles.mainLink}>
@@ -194,19 +194,19 @@ export default function MainNavBar() {
                 <div className={styles.mainLinks}>{mainLinks}</div>
             </Navbar.Section>
 
-            <Navbar.Section className={styles.section}>
-                <Group className={styles.collectionsHeader} position="apart">
-                    <Text size="xs" weight={500} color="dimmed">
-                        Collections
-                    </Text>
-                    <Tooltip label="Create collection" withArrow position="right">
-                        <ActionIcon variant="default" size={18}>
-                            <IconPlus size="0.8rem" stroke={1.5} />
-                        </ActionIcon>
-                    </Tooltip>
-                </Group>
-                <div className={styles.collections}>{collectionLinks}</div>
-            </Navbar.Section>
+            {/*<Navbar.Section className={styles.section}>*/}
+            {/*    <Group className={styles.collectionsHeader} position="apart">*/}
+            {/*        <Text size="xs" weight={500} color="dimmed">*/}
+            {/*            Collections*/}
+            {/*        </Text>*/}
+            {/*        <Tooltip label="Create collection" withArrow position="right">*/}
+            {/*            <ActionIcon variant="default" size={18}>*/}
+            {/*                <IconPlus size="0.8rem" stroke={1.5} />*/}
+            {/*            </ActionIcon>*/}
+            {/*        </Tooltip>*/}
+            {/*    </Group>*/}
+            {/*    <div className={styles.collections}>{collectionLinks}</div>*/}
+            {/*</Navbar.Section>*/}
         </Navbar>
     );
 

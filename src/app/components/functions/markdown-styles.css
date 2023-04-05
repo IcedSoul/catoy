@@ -12,6 +12,14 @@
 
 @media (max-width: 767px) {
   .markdown-body {
-    padding: 15px;
+    font-size: 13px;
+  }
+
+  .markdown-body p {
+    margin-bottom: 8px;
+  }
+
+  .markdown-body li>p {
+    margin-top: 8px;
   }
 }

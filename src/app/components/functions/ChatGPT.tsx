@@ -40,6 +40,19 @@ const useStyles = createStyles((theme) => ({
         '&:hover': {
             boxShadow: theme.shadows.md,
         },
+
+        [theme.fn.smallerThan('lg')]: {
+            padding: theme.spacing.md,
+            paddingLeft: `calc(${theme.spacing.md} * 2)`,
+        },
+        [theme.fn.smallerThan('md')]: {
+            padding: theme.spacing.sm,
+            paddingLeft: `calc(${theme.spacing.sm} * 2)`,
+        },
+        [theme.fn.smallerThan('sm')]: {
+            padding: theme.spacing.xs,
+            paddingLeft: `calc(${theme.spacing.xs} * 2)`,
+        },
     },
     cardLeft: {
         '&::before': {
@@ -50,6 +63,9 @@ const useStyles = createStyles((theme) => ({
             left: 0,
             width: rem(6),
             backgroundImage: theme.fn.linearGradient(0, theme.colors.cyan[3], theme.colors.teal[6]),
+            [theme.fn.smallerThan('sm')]: {
+                width: rem(4),
+            },
         },
     },
     cardRight: {
@@ -61,19 +77,37 @@ const useStyles = createStyles((theme) => ({
             right: 0,
             width: rem(6),
             backgroundImage: theme.fn.linearGradient(0, theme.colors.gray[5], theme.colors.dark[7]),
+            [theme.fn.smallerThan('sm')]: {
+                width: rem(4),
+            },
         },
     },
-    iconColorLeft: {
-        deg: 0,
-        from: 'cyan',
-        to: 'teal'
+    iconBox: {
+        width: '2.5rem',
+        height: '2.5rem',
+        maxHeight: '2.5rem',
+        maxWidth: '2.5rem',
+        borderRadius: '0.5rem',
+        [theme.fn.smallerThan('sm')]: {
+            width: '1.5rem',
+            height: '1.5rem',
+            maxHeight: '1.5rem',
+            maxWidth: '1.5rem',
+            borderRadius: '0.25rem',
+        },
     },
-
-    iconColorRight: {
-        deg: 0,
-        from: 'dark',
-        to: 'gray'
+    icon: {
+        width: '1.25rem',
+        height: '1.25rem',
+        [theme.fn.smallerThan('sm')]: {
+            width: '1.0rem',
+            height: '1.0rem',
+        },
     },
+    chatArea: {
+        flexGrow: 1,
+        overflow: "hidden"
+    }
 }));
 
 export default function ChatGPT() {
@@ -82,7 +116,7 @@ export default function ChatGPT() {
     const [currentModel, setCurrentModel] = useState<string | null>(null);
     const [messages, setMessages] = useState<Array<ChatMessage>>([])
     const [modelLists, setModelLists] = useState<Array<SelectItem>>([])
-    const [currentLoadingMessage , setCurrentLoadingMessage] = useState<ChatMessage>();
+    const [currentLoadingMessage, setCurrentLoadingMessage] = useState<ChatMessage>();
     const scroll = useRef<HTMLDivElement>(null);
     // const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -106,7 +140,10 @@ export default function ChatGPT() {
             setCurrentModel(models.at(0)?.value || null)
             setModelLists(models)
         })
-        getMessages().then(setMessages)
+        getMessages().then((messages) => {
+            setMessages(messages)
+            setTimeout(() => scrollToBottom("smooth"), 100)
+        })
     }, [])
 
     const sendMessage = async (model: string, message: ChatMessage) => {
@@ -165,8 +202,8 @@ export default function ChatGPT() {
         scrollToBottom()
     }
 
-    const scrollToBottom = () =>
-        scroll.current?.scrollTo({ top: scroll.current?.scrollHeight, behavior: 'auto' });
+    const scrollToBottom = (behavior: ScrollBehavior = 'auto') =>
+        scroll.current?.scrollTo({ top: scroll.current?.scrollHeight, behavior });
 
     const messageContents = [...messages, currentLoadingMessage].filter(message => message).map((message, key) => (
         <Paper
@@ -184,29 +221,27 @@ export default function ChatGPT() {
             }
         >
             <Flex
-                gap="md"
+                gap={{ base: '0.5rem', lg: 'lg', md: 'md', sm: 'sm', xs: 'xs' }}
                 justify={message?.role === MessageSource.ASSISTANT ? "left" : "right"}
-                align="flex-start"
-                direction={message?.role === MessageSource.ASSISTANT ? "row" : "row-reverse"}
+                align={message?.role === MessageSource.ASSISTANT ? "flex-start" : "flex-end"}
+                direction={message?.role === MessageSource.ASSISTANT ? { base: 'column', xs: 'row'} : { base: 'column', xs: 'row-reverse'}}
             >
                 {
                     message?.role === MessageSource.ASSISTANT ? (
                         <ThemeIcon
-                            size="xl"
-                            radius="md"
+                            className={classes.iconBox}
                             variant="gradient"
                             gradient={{ deg: 0, from: 'cyan', to: 'teal' }}
                         >
-                            <IconBrandOpenai size={rem(20)} stroke={1.5} />
+                            <IconBrandOpenai className={classes.icon} size={rem(20)} stroke={1.5} />
                         </ThemeIcon>
                     ) : (
                         <ThemeIcon
-                            size="xl"
-                            radius="md"
+                            className={classes.iconBox}
                             variant="gradient"
                             gradient={{ deg: 0, from: 'dark', to: 'gray' }}
                         >
-                            <IconUfo size={rem(20)} stroke={1.5} />
+                            <IconUfo className={classes.icon} size={rem(20)} stroke={1.5} />
                         </ThemeIcon>
                     )
                 }
@@ -216,8 +251,8 @@ export default function ChatGPT() {
                     justify={message?.role === MessageSource.ASSISTANT ? "flex-start" : "flex-end"}
                     wrap="wrap"
                 >
-                    <ReactMarkdown
-                        children={ message?.content || ""}
+                    {/* eslint-disable-next-line react/no-children-prop */}
+                    <ReactMarkdown children={ message?.content || ""}
                         className="markdown-body"
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -227,6 +262,9 @@ export default function ChatGPT() {
                                     <SyntaxHighlighter
                                         style={ tomorrow }
                                         language={match[1]}
+                                        showLineNumbers
+                                        wrapLines
+                                        wrapLongLines
                                         PreTag="div"
                                         {...props}
                                     >
@@ -247,11 +285,12 @@ export default function ChatGPT() {
     ));
 
     return (
-        <Container h="100%">
+        <Container h="100%" size="lg" pl="0" pr="0">
             <Stack
                 h="100%"
-                justify="center"
+                justify="space-between"
                 align="center"
+                spacing="sm"
             >
                 <Stack
                     w="100%"
@@ -262,15 +301,16 @@ export default function ChatGPT() {
                         label="Model"
                         value={currentModel}
                         data={modelLists || []}
+                        size="xs"
                         onChange={setCurrentModel}
                     />
                 </Stack>
                 <Stack
-                    h="calc(90% - 2rem)"
                     w="100%"
                     justify="flex-end"
                     align="flex-end"
                     spacing="lg"
+                    className={classes.chatArea}
                 >
                     <ScrollArea.Autosize h="100%" w="100%" viewportRef={scroll}>
                         <Stack justify="flex-end" align="self-start" w="100%" h="100%">
@@ -287,7 +327,7 @@ export default function ChatGPT() {
                     <Grid.Col span={11}>
                         <Textarea
                             ref={messageTextArea}
-                            placeholder="Ask ChatGPT (Alt + Enter or Click Send Icon to send message)"
+                            placeholder="Ask ChatGPT (Enter or click Send Icon to send message)"
                             autosize
                             minRows={1}
                             maxRows={10}
