@@ -7,6 +7,12 @@ import {
 import MainNavBar from "./layout/MainNavBar";
 import ChatGPT from "./functions/ChatGPT";
 import React, {useState} from "react";
+import MainHeader from "@/app/components/layout/MainHeader";
+
+const user = {
+    name: 'xiaofeng',
+    image: 'https://avatars.githubusercontent.com/u/25154432?v=4',
+}
 
 export default function Main() {
     const theme = useMantineTheme();
@@ -18,28 +24,13 @@ export default function Main() {
                 main: {
                     background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
                     height: 'calc(100vh - var(--mantine-header-height, 0px))',
-                    [theme.fn.smallerThan('sm')]: {
-                        paddingTop: `calc(var(--mantine-header-height, 0px) + 0.25rem)`,
-                    },
+                    paddingTop: `calc(var(--mantine-header-height, 0px) + 0.25rem)`,
                 },
             }}
             navbarOffsetBreakpoint="sm"
             asideOffsetBreakpoint="sm"
             navbar={<MainNavBar opened={opened}/>}
-            header={<MediaQuery largerThan="sm" styles={{ display: 'none', height: 0 }}>
-                <Header height={{ base: 50, sm: 0 }} p="md">
-                    <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                            <Burger
-                                opened={opened}
-                                onClick={() => setOpened((o) => !o)}
-                                size="sm"
-                                color={theme.colors.gray[6]}
-                                mr="xl"
-                            />
-                        <Text>Catoy</Text>
-                    </div>
-                </Header>
-            </MediaQuery>}
+            header={<MainHeader opened={opened} setOpened={setOpened} user={user}/>}
             h="100%"
         >
             <ChatGPT/>

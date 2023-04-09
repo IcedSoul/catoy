@@ -9,16 +9,18 @@ export const mongoDbInfo = {
 }
 
 class MyMongoClient {
-    mongoClient = new MongoClient(url);
+    mongoClient = new MongoClient(url)
+    mongoClientPromise: Promise<MongoClient>
 
     constructor() {
-        this.connect().then(console.log)
+        this.mongoClientPromise = this.connect()
+        this.mongoClientPromise.then(() => {
+            console.log("Mongodb connected")
+        })
     }
 
     connect = async () => {
-        await this.mongoClient.connect();
-        console.log('Connected successfully to server');
-        return 'done.';
+        return this.mongoClient.connect();
     }
 
     getCollection = <T extends Document>(collection: string): Collection<T> => {

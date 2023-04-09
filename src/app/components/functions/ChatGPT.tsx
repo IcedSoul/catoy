@@ -301,7 +301,7 @@ export default function ChatGPT() {
                         label="Model"
                         value={currentModel}
                         data={modelLists || []}
-                        size="xs"
+                        size="sm"
                         onChange={setCurrentModel}
                     />
                 </Stack>

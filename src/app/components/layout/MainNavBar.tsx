@@ -1,3 +1,5 @@
+`use client`;
+
 import {
     ActionIcon,
     Code,
@@ -16,17 +18,6 @@ import {IconBrandHipchat, IconCheckbox, IconPlus, IconSearch, IconUser} from "@t
 const useStyles = createStyles((theme) => ({
     navbar: {
         paddingTop: 0,
-    },
-
-    header: {
-        padding: theme.spacing.md,
-        paddingTop: 0,
-        marginLeft: `calc(${theme.spacing.md} * -1)`,
-        marginRight: `calc(${theme.spacing.md} * -1)`,
-        color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-        borderBottom: `${rem(1)} solid ${
-            theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
-        }`,
     },
 
     search: {
@@ -171,13 +162,6 @@ export default function MainNavBar({ opened }: Props) {
 
     return (
         <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-            <Navbar.Section className={styles.header}>
-                <Group position="apart">
-                    <Image src="/logo.png" width={rem(120)} />
-                    <Code sx={{ fontWeight: 700 }}>v0.0.1</Code>
-                </Group>
-            </Navbar.Section>
-
             <Navbar.Section className={styles.search}>
                 <TextInput
                     placeholder="Search"
