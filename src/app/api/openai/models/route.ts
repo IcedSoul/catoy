@@ -1,6 +1,5 @@
 import {SupportModels} from "@/common/server/CommonUtils";
 
-
 export async function GET(request: Request) {
     const params = new URLSearchParams(new URL(request.url).searchParams)
     const type = params?.get('type') || ''

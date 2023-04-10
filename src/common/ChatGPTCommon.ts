@@ -2,6 +2,13 @@ export enum MessageSource {
     USER = "user",
     ASSISTANT = "assistant"
 }
+
+export interface SessionUser {
+    name: string,
+    email: string,
+    image?: string,
+}
+
 export interface ChatMessage {
     role: MessageSource,
     content: string
@@ -20,3 +27,7 @@ export enum HttpMethod {
 export const decoder = new TextDecoder()
 export const encoder = new TextEncoder()
 
+export interface ChatSession {
+    sessionId: string,
+    title: string,
+}

@@ -1,5 +1,3 @@
-'use client';
-
 import {
     Avatar,
     Burger, Button, Container,
@@ -20,8 +18,10 @@ import {
     IconStar,
     IconSwitchHorizontal,
 } from "@tabler/icons-react";
-import {useSession} from "next-auth/react";
+import {signIn, signOut, useSession} from "next-auth/react";
 import CatoyLogo from "@/app/components/parts/CatoyLogo";
+import Link from "next/link";
+import {SessionUser} from "@/common/ChatGPTCommon";
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -69,16 +69,14 @@ const useStyles = createStyles((theme) => ({
 type Props = {
     opened: boolean
     setOpened: Dispatch<SetStateAction<boolean>>
-    user: {
-        name: string
-        image: string
-    }
 }
 
-export default function MainHeader({ opened, setOpened, user }: Props){
+export default function MainHeader({ opened, setOpened }: Props){
     const {classes, theme, cx } = useStyles();
     const [userMenuOpened, setUserMenuOpened] = useState(false);
     const { data: session } = useSession()
+    const { user } = session || { user: null }
+    console.log("MainHeader: user: ", user);
 
     return (
         <Header height={56} className={classes.header}>
@@ -97,7 +95,7 @@ export default function MainHeader({ opened, setOpened, user }: Props){
                     </Group>
                     <Group position="right">
                         {
-                            session ? (
+                            session && user ? (
                                 <Menu
                                     width={260}
                                     position="bottom-end"
@@ -111,7 +109,7 @@ export default function MainHeader({ opened, setOpened, user }: Props){
                                             className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
                                         >
                                             <Group spacing={7}>
-                                                <Avatar src={user.image} alt={user.name} radius="xl" size={20} />
+                                                <Avatar src={user.image} alt={user.name || "avatar"} radius="xl" size={20} />
                                                 <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
                                                     {user.name}
                                                 </Text>
@@ -143,11 +141,13 @@ export default function MainHeader({ opened, setOpened, user }: Props){
                                         <Menu.Item icon={<IconSwitchHorizontal size="0.9rem" stroke={1.5} />}>
                                             Change account
                                         </Menu.Item>
-                                        <Menu.Item icon={<IconLogout size="0.9rem" stroke={1.5} />}>Logout</Menu.Item>
+                                        <Menu.Item onClick={() => signOut()} icon={<IconLogout size="0.9rem" stroke={1.5} />}>
+                                            Logout
+                                        </Menu.Item>
                                     </Menu.Dropdown>
                                 </Menu>
                             ) : (
-                                <Button variant="outline" color="dark" radius="lg">Login</Button>
+                                <Button onClick={() => signIn()} variant="outline" color="dark" radius="lg">Login</Button>
                             )
                         }
                     </Group>

@@ -1,5 +1,3 @@
-`use client`;
-
 import {
     ActionIcon,
     Code,
@@ -14,6 +12,8 @@ import {
     UnstyledButton
 } from "@mantine/core";
 import {IconBrandHipchat, IconCheckbox, IconPlus, IconSearch, IconUser} from "@tabler/icons-react";
+import {useEffect, useState} from "react";
+import {ChatSession} from "@/common/ChatGPTCommon";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -134,10 +134,22 @@ const toys = [
 ];
 type Props = {
     opened: boolean
+    setChatSession: (chatSession: ChatSession) => void
 }
 
-export default function MainNavBar({ opened }: Props) {
+export default function MainNavBar({ opened, setChatSession }: Props) {
     const { classes: styles } = useStyles();
+    const [chatSessions, setChatSessions] = useState<Array<ChatSession>>([]);
+
+    useEffect(() => {
+        const getSessions = async () => {
+            fetch("/api/chatgpt/sessions")
+                .then(response => response.json())
+                .then(sessions => {
+                    setChatSessions(sessions)
+                });
+        }
+    })
 
     const mainLinks = links.map((link) => (
         <UnstyledButton key={link.label} className={styles.mainLink}>
@@ -148,15 +160,15 @@ export default function MainNavBar({ opened }: Props) {
         </UnstyledButton>
     ));
 
-    const collectionLinks = toys.map((toy) => (
+    const collectionLinks = chatSessions.map((session) => (
         <a
             href="/"
-            onClick={(event) => event.preventDefault()}
-            key={toy.label}
+            onClick={() => setChatSession(session)}
+            key={session.sessionId}
             className={styles.collectionLink}
         >
-            <span style={{ marginRight: rem(9), fontSize: rem(16) }}>{toy.emoji}</span>{' '}
-            {toy.label}
+            <span style={{ marginRight: rem(9), fontSize: rem(16) }}>✨</span>{' '}
+            {session.title}
         </a>
     ));
 
@@ -178,19 +190,19 @@ export default function MainNavBar({ opened }: Props) {
                 <div className={styles.mainLinks}>{mainLinks}</div>
             </Navbar.Section>
 
-            {/*<Navbar.Section className={styles.section}>*/}
-            {/*    <Group className={styles.collectionsHeader} position="apart">*/}
-            {/*        <Text size="xs" weight={500} color="dimmed">*/}
-            {/*            Collections*/}
-            {/*        </Text>*/}
-            {/*        <Tooltip label="Create collection" withArrow position="right">*/}
-            {/*            <ActionIcon variant="default" size={18}>*/}
-            {/*                <IconPlus size="0.8rem" stroke={1.5} />*/}
-            {/*            </ActionIcon>*/}
-            {/*        </Tooltip>*/}
-            {/*    </Group>*/}
-            {/*    <div className={styles.collections}>{collectionLinks}</div>*/}
-            {/*</Navbar.Section>*/}
+            <Navbar.Section className={styles.section}>
+                <Group className={styles.collectionsHeader} position="apart">
+                    <Text size="xs" weight={500} color="dimmed">
+                        Sessions
+                    </Text>
+                    <Tooltip label="Create collection" withArrow position="right">
+                        <ActionIcon variant="default" size={18}>
+                            <IconPlus size="0.8rem" stroke={1.5} />
+                        </ActionIcon>
+                    </Tooltip>
+                </Group>
+                <div className={styles.collections}>{collectionLinks}</div>
+            </Navbar.Section>
         </Navbar>
     );
 

@@ -4,7 +4,9 @@ const url = 'mongodb://root:root@localhost:27017/admin'
 export const mongoDbInfo = {
     database: 'catoy',
     collections: {
-        Message: 'message'
+        Message: 'message',
+        User: 'user',
+        Session: 'session'
     }
 }
 
@@ -26,10 +28,6 @@ class MyMongoClient {
     getCollection = <T extends Document>(collection: string): Collection<T> => {
         const catoy = this.mongoClient.db(mongoDbInfo.database)
         return catoy.collection<T>(collection)
-    }
-
-    dispose = () => {
-        mongoClient.dispose()
     }
 }
 

@@ -15,6 +15,7 @@ export default function Providers({ children }: ProvidersProps) {
           theme={{
               /** Put your mantine theme override here */
               colorScheme: 'light',
+              loader: 'bars'
           }}
       >
         <SessionProvider>

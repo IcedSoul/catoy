@@ -1,24 +1,33 @@
 import {
-    ChatMessage
+    ChatMessage, SessionUser
 } from "@/common/ChatGPTCommon";
 import {AxiosResponse} from "axios";
-import {createWebReadableStreamResponse, OpenAiApi, SupportModels} from "@/common/server/CommonUtils";
-import {addMessage, getMessages} from "@/common/server/repository/Messages";
+import {createWebReadableStreamResponse, getUserInfo, OpenAiApi, SupportModels} from "@/common/server/CommonUtils";
+import {messageService} from "@/common/server/services/MessageService";
+import {randomUUID} from "crypto";
+import {sessions} from "@/common/server/repository/Sessions";
 
 interface GetMessageParams {
     model: string,
     message: ChatMessage,
-
+    sessionId?: string,
     historyMessage: Array<ChatMessage>
 }
 
 
 export async function POST(request: Request){
+    const user: SessionUser = await getUserInfo()
     const params: GetMessageParams = await request.json()
-    params.historyMessage = await getMessages()
-    addMessage(params.message)
+    params.historyMessage = []
+    if(params.sessionId){
+        params.historyMessage = await messageService.getChatMessages(user.email, params.sessionId)
+    } else {
+        params.sessionId = randomUUID()
+        sessions.addSession({ sessionId: params.sessionId, title: params.message.content.slice(0, 10).concat("..."), userEmail: user.email }).then()
+    }
+    messageService.saveMessage(params.message, params.sessionId).then()
     const completion: AxiosResponse | null = await getOpenAIResponse(params)
-    return createWebReadableStreamResponse(completion?.data)
+    return createWebReadableStreamResponse(completion?.data, params.sessionId)
 }
 
 const getOpenAIResponse = (params: GetMessageParams): Promise<AxiosResponse> | null => {

@@ -7,11 +7,11 @@ export const metadata = {
   description: 'Some interesting toys',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+interface RootLayoutProps {
+    children: React.ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body>

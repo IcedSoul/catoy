@@ -3,7 +3,7 @@ import { GoogleIcon } from './GoogleIcon';
 import {IconBrandGithub} from "@tabler/icons-react";
 
 interface SocialButtonProps extends ButtonProps {
-    onClicked?: () => void;
+    onClick?: () => void;
 }
 export function GoogleButton(props: SocialButtonProps) {
     return <Button leftIcon={<GoogleIcon />} variant="default" color="gray" {...props} />;

@@ -1,7 +1,11 @@
 import {IncomingMessage} from "http";
-import {ChatMessage, encoder, MessageSource} from "@/common/ChatGPTCommon";
+import {ChatMessage, encoder, MessageSource, SessionUser} from "@/common/ChatGPTCommon";
 import {Configuration, OpenAIApi} from "openai";
-import {addMessage} from "@/common/server/repository/Messages";
+import { messages } from "@/common/server/repository/Messages";
+import {getServerSession} from "next-auth";
+import {authOptions} from "@/pages/api/auth/[...nextauth]";
+import {redirect} from "next/navigation";
+import {messageService} from "@/common/server/services/MessageService";
 
 
 const configuration = new Configuration({
@@ -16,7 +20,7 @@ export const SupportModels = {
     chat: ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']
 }
 
-export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage): Response => {
+export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage, sessionId?: string): Response => {
     let bufferMessage: string | null = null
     const chatMsg: ChatMessage = {
         role: MessageSource.ASSISTANT,
@@ -30,7 +34,7 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
                     lines?.map((line) => {
                         const message = line.replace(/^data: /, "");
                         if(message === '[DONE]'){
-                            addMessage(chatMsg)
+                            messageService.saveMessage(chatMsg, sessionId).then()
                             controller.close()
                         } else {
                             let res;
@@ -49,6 +53,7 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
                             if(res.object.startsWith('chat.completion')){
                                 const msg = res.choices[0].delta
                                 const content = msg.content ? Buffer.from(msg.content, 'utf-8').toString() : null
+                                console.log(content)
                                 content ? chatMsg.content = chatMsg.content.concat(content) : null
                                 content ? controller.enqueue(encoder.encode(content)) : null
                             } else if(res.object.startsWith('text_completion')){
@@ -64,4 +69,16 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
         'Content-Type': 'application/octet-stream'
     }
     return new Response(readableStream, { headers, status: 200 })
+}
+
+export const getUserInfo = async (): Promise<SessionUser> => {
+    const session = await getServerSession(authOptions)
+    if(!session || !session.user || !session.user.email) {
+        redirect('/auth/login')
+    }
+    return {
+        email: session.user.email,
+        name: session.user.name || session.user.email,
+        image: session.user.image || ""
+    }
 }

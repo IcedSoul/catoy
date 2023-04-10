@@ -1,22 +1,17 @@
-'use client';
-
 import {
-    AppShell, Burger, Header, MediaQuery, Text,
+    AppShell,
     useMantineTheme,
 } from '@mantine/core';
 import MainNavBar from "./layout/MainNavBar";
 import ChatGPT from "./functions/ChatGPT";
 import React, {useState} from "react";
 import MainHeader from "@/app/components/layout/MainHeader";
-
-const user = {
-    name: 'xiaofeng',
-    image: 'https://avatars.githubusercontent.com/u/25154432?v=4',
-}
+import {ChatSession} from "@/common/ChatGPTCommon";
 
 export default function Main() {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
+    const [chatSession, setChatSession] = useState<ChatSession | null>(null);
 
     return (
         <AppShell
@@ -29,11 +24,11 @@ export default function Main() {
             }}
             navbarOffsetBreakpoint="sm"
             asideOffsetBreakpoint="sm"
-            navbar={<MainNavBar opened={opened}/>}
-            header={<MainHeader opened={opened} setOpened={setOpened} user={user}/>}
+            navbar={<MainNavBar opened={opened} setChatSession={setChatSession}/>}
+            header={<MainHeader opened={opened} setOpened={setOpened}/>}
             h="100%"
         >
-            <ChatGPT/>
+            <ChatGPT sessionId={chatSession?.sessionId || ""}/>
         </AppShell>
     );
 }

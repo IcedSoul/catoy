@@ -1,20 +1,22 @@
-import {ChatMessage} from "@/common/ChatGPTCommon";
-import {addMessage, getMessages} from "@/common/server/repository/Messages";
+import {ChatMessage, SessionUser} from "@/common/ChatGPTCommon";
 import {AxiosResponse} from "axios";
-import {createWebReadableStreamResponse, OpenAiApi} from "@/common/server/CommonUtils";
+import {createWebReadableStreamResponse, getUserInfo, OpenAiApi} from "@/common/server/CommonUtils";
+import {messageService} from "@/common/server/services/MessageService";
 
 interface GetMessageParams {
     model: string,
-    message: ChatMessage
+    message: ChatMessage,
+    sessionId?: string
 }
 
 
 export async function POST(request: Request){
+    const user: SessionUser = await getUserInfo()
     const params: GetMessageParams = await request.json()
-    const historyMessages = await getMessages()
-    addMessage(params.message)
+    const historyMessages = params.sessionId ? await messageService.getChatMessages(user.email, params.sessionId) : []
+    messageService.saveMessage(params.message, params.sessionId).then()
     const res: AxiosResponse | null = await chat(params, historyMessages)
-    return createWebReadableStreamResponse(res?.data)
+    return createWebReadableStreamResponse(res?.data, params.sessionId)
 }
 
 const chat = (params: GetMessageParams, historyMessages: Array<ChatMessage>): Promise<AxiosResponse> => {

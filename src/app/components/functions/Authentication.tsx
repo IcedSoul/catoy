@@ -17,6 +17,14 @@ import {
 } from '@mantine/core';
 import {GithubButton, GoogleButton} from "@/common/SocialButtons";
 import {signIn, signOut, useSession} from "next-auth/react";
+import {redirect} from "next/navigation";
+
+interface UserValues {
+    name?: string;
+    email: string;
+    password: string;
+    terms: boolean;
+}
 
 
 export function AuthenticationForm(props: PaperProps) {
@@ -37,13 +45,23 @@ export function AuthenticationForm(props: PaperProps) {
         },
     });
 
+    const onSubmit = (values: UserValues) => {
+        console.log(`login:  ${values.email} ${values.password}`)
+        signIn('credentials',
+            {
+                name: values.name,
+                email: values.email,
+                password: values.password,
+                type: type,
+                redirect: true,
+                callbackUrl: '/'
+            }).then((res) => {
+            console.log(res)
+        })
+    };
+
     if(session){
-        return (
-            <>
-                Signed in as {session.user?.email} <br />
-                <button onClick={() => signOut()}>Sign out</button>
-            </>
-        )
+        redirect('/')
     }
 
     return (
@@ -53,13 +71,13 @@ export function AuthenticationForm(props: PaperProps) {
             </Text>
 
             <Group grow mb="md" mt="md">
-                <GoogleButton radius="xl" onClicked={() => signIn("google")}>Google</GoogleButton>
-                <GithubButton radius="xl" onClicked={() => signIn("github")}>Github</GithubButton>
+                <GoogleButton radius="xl" onClick={() => signIn("google")}>Google</GoogleButton>
+                <GithubButton radius="xl" onClick={() => signIn("github")}>Github</GithubButton>
             </Group>
 
             <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-            <form onSubmit={form.onSubmit(() => {})}>
+            <form onSubmit={form.onSubmit(onSubmit)}>
                 <Stack>
                     {type === 'register' && (
                         <TextInput

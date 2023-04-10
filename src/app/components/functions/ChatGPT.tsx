@@ -1,5 +1,3 @@
-'use client';
-
 import {
     ActionIcon,
     Container,
@@ -110,13 +108,18 @@ const useStyles = createStyles((theme) => ({
     }
 }));
 
-export default function ChatGPT() {
+interface ChatGPTProps {
+    sessionId?: string
+}
+
+export default function ChatGPT(props: ChatGPTProps) {
     const { classes, cx } = useStyles()
     const messageTextArea = useRef<HTMLTextAreaElement>(null)
     const [currentModel, setCurrentModel] = useState<string | null>(null);
     const [messages, setMessages] = useState<Array<ChatMessage>>([])
     const [modelLists, setModelLists] = useState<Array<SelectItem>>([])
     const [currentLoadingMessage, setCurrentLoadingMessage] = useState<ChatMessage>();
+    const [sessionId] = useState<string>(props.sessionId || "")
     const scroll = useRef<HTMLDivElement>(null);
     // const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -132,7 +135,7 @@ export default function ChatGPT() {
                 })
         }
         const getMessages = async () => {
-            return await fetch("/api/chatgpt/message")
+            return await fetch("/api/chatgpt/message?".concat(new URLSearchParams({ sessionId: sessionId }).toString()))
                 .then<Array<ChatMessage>>(response => response.json())
 
         }
@@ -152,7 +155,8 @@ export default function ChatGPT() {
         }
         const body = {
             model,
-            message
+            message,
+            sessionId
         }
         const requestInit: RequestInit = {
             method: HttpMethod.POST,

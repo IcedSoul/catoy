@@ -1,39 +1,45 @@
-import {ChatMessage} from "@/common/ChatGPTCommon";
-import {appendFile, readFile, writeFile} from "@/common/server/repository/FileUtil";
 import {Collection} from "mongodb";
-import {mongoClient, mongoDbInfo} from "@/common/mongo/MongoClient";
+import { mongoClient, mongoDbInfo } from "@/common/server/mongo/MongoClient";
+import {Message} from "@/common/server/repository/Models";
 
-interface MessagePojo extends Document, ChatMessage {
-}
-let msgCollection: Collection<MessagePojo> | null = null
-// use mongo
-export const getMessages = async (): Promise<Array<ChatMessage>> => {
-    msgCollection ??= mongoClient.getCollection<MessagePojo>(mongoDbInfo.collections.Message)
-    return await msgCollection.find({}, { projection: { _id: 0 } }).toArray()
+interface MessagePojo extends Document, Message {
 }
 
-export const addMessage = (message: ChatMessage) => {
-    msgCollection ??= mongoClient.getCollection(mongoDbInfo.collections.Message)
-    const insertMessage: MessagePojo = JSON.parse(JSON.stringify(message))
-    msgCollection.insertOne(insertMessage).then()
+class Messages{
+    private messagesCollection: Collection<MessagePojo>
+
+    constructor() {
+        this.messagesCollection = mongoClient.getCollection<MessagePojo>(mongoDbInfo.collections.Message)
+    }
+
+    async getMessages(userEmail: string, sessionId: string): Promise<Array<Message>> {
+        const query = { userEmail, sessionId }
+        return this.messagesCollection.find(query).toArray()
+    }
+
+    async addMessage(message: Message): Promise<boolean> {
+        const insertMessage: MessagePojo = JSON.parse(JSON.stringify(message))
+        return this.messagesCollection.insertOne(insertMessage).then(() => true).catch(() => false)
+    }
+
+    async clearMessage(): Promise<boolean> {
+        return this.messagesCollection.drop().then(() => true).catch(() => false)
+    }
 }
 
-export const clearMessage = () => {
-    msgCollection ??= mongoClient.getCollection(mongoDbInfo.collections.Message)
-    msgCollection.drop().then()
-}
+export const messages = new Messages()
 
 // file storage (temp)
-export const getMessagesFromFile = async (): Promise<Array<ChatMessage>> => {
-    let msg = await readFile("messages")
-    msg = msg?.trim().slice(0, -1) || msg
-    return JSON.parse(`[${msg}]`)
-}
-
-export const addMessageFromFile = (message: ChatMessage) => {
-    appendFile("messages", JSON.stringify(message)).then()
-}
-
-export const clearMessageFromFile = () => {
-    writeFile("messages", "").then()
-}
+// export const getMessagesFromFile = async (): Promise<Array<ChatMessage>> => {
+//     let msg = await readFile("messages")
+//     msg = msg?.trim().slice(0, -1) || msg
+//     return JSON.parse(`[${msg}]`)
+// }
+//
+// export const addMessageFromFile = (message: ChatMessage) => {
+//     appendFile("messages", JSON.stringify(message)).then()
+// }
+//
+// export const clearMessageFromFile = () => {
+//     writeFile("messages", "").then()
+// }
