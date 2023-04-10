@@ -1,10 +1,9 @@
-import NextAuth from "next-auth"
+import NextAuth, {NextAuthOptions} from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import { users } from "@/common/server/repository/Users";
 import {randomBytes, randomUUID} from "crypto";
-import {AuthOptions} from "next-auth/src";
 import {User} from "@/common/server/repository/Models";
 
 enum AuthType {
@@ -12,7 +11,7 @@ enum AuthType {
     REGISTER = "register"
 }
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: 'credentials',
