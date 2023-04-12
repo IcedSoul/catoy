@@ -1,4 +1,5 @@
 import {
+    CHAT_SESSION_ID,
     ChatMessage, SessionUser
 } from "@/common/ChatGPTCommon";
 import {AxiosResponse} from "axios";
@@ -23,11 +24,14 @@ export async function POST(request: Request){
         params.historyMessage = await messageService.getChatMessages(user.email, params.sessionId)
     } else {
         params.sessionId = randomUUID()
-        sessions.addSession({ sessionId: params.sessionId, title: params.message.content.slice(0, 10).concat("..."), userEmail: user.email }).then()
+        sessions.addSession({ sessionId: params.sessionId, title: params.message.content.slice(0, 12).concat("..."), userEmail: user.email }).then()
+
     }
     messageService.saveMessage(params.message, params.sessionId).then()
     const completion: AxiosResponse | null = await getOpenAIResponse(params)
-    return createWebReadableStreamResponse(completion?.data, params.sessionId)
+    const response = createWebReadableStreamResponse(completion?.data, params.sessionId)
+    response.cookies.set(CHAT_SESSION_ID, params.sessionId)
+    return response
 }
 
 const getOpenAIResponse = (params: GetMessageParams): Promise<AxiosResponse> | null => {

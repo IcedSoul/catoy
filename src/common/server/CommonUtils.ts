@@ -5,6 +5,7 @@ import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import {redirect} from "next/navigation";
 import {messageService} from "@/common/server/services/MessageService";
+import {NextResponse} from "next/server";
 
 
 const configuration = new Configuration({
@@ -19,7 +20,7 @@ export const SupportModels = {
     chat: ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']
 }
 
-export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage, sessionId?: string): Response => {
+export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage, sessionId?: string): NextResponse => {
     let bufferMessage: string | null = null
     const chatMsg: ChatMessage = {
         role: MessageSource.ASSISTANT,
@@ -67,7 +68,7 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
     const headers = {
         'Content-Type': 'application/octet-stream'
     }
-    return new Response(readableStream, { headers, status: 200 })
+    return new NextResponse(readableStream, { headers, status: 200 })
 }
 
 export const getUserInfo = async (): Promise<SessionUser> => {

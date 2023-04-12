@@ -12,7 +12,7 @@ class Sessions{
     }
 
     async getSessionByEmail(email: string): Promise<Array<Session>> {
-        const query = {email}
+        const query = {userEmail: email}
         return this.sessionsCollection.find(query).toArray()
     }
 

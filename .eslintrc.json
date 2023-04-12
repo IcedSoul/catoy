@@ -1,4 +1,7 @@
 {
   "extends": ["next", "prettier"],
-  "ignorePatterns": ["./node_modules/*", "./next/*", "next.config.js"]
+  "ignorePatterns": ["./node_modules/*", "./next/*", "next.config.js"],
+  "rules": {
+    "react/display-name": "off"
+  }
 }

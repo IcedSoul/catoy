@@ -14,6 +14,14 @@ export interface ChatMessage {
     content: string
 }
 
+export interface ChatGPTRef{
+    loadMessages: () => Promise<void>
+}
+
+
+export interface NavBarRef {
+    loadSessions: () => Promise<void>
+}
 export enum HttpMethod {
     GET = "GET",
     HEAD = "HEAD",
@@ -31,3 +39,5 @@ export interface ChatSession {
     sessionId: string,
     title: string,
 }
+
+export const CHAT_SESSION_ID = "chat-session-id"

@@ -21,9 +21,11 @@ import './markdown-styles.css'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import {tomorrow} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {CodeProps} from "react-markdown/lib/ast-to-react";
-import {ChatMessage, decoder, HttpMethod, MessageSource} from "@/common/ChatGPTCommon";
+import {ChatMessage, decoder, HttpMethod, MessageSource, CHAT_SESSION_ID, ChatGPTRef} from "@/common/ChatGPTCommon";
+import {getCookieByName} from "@/common/common";
+import {deleteCookie} from "cookies-next";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -49,7 +51,7 @@ const useStyles = createStyles((theme) => ({
         },
         [theme.fn.smallerThan('sm')]: {
             padding: theme.spacing.xs,
-            paddingLeft: `calc(${theme.spacing.xs} * 2)`,
+            paddingLeft: `calc(${theme.spacing.xs} * 1.5)`,
         },
     },
     cardLeft: {
@@ -109,20 +111,22 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface ChatGPTProps {
-    sessionId?: string
+    loadSession: () => void
 }
 
-export default function ChatGPT(props: ChatGPTProps) {
+export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: ChatGPTProps, ref) => {
     const { classes, cx } = useStyles()
     const messageTextArea = useRef<HTMLTextAreaElement>(null)
     const [currentModel, setCurrentModel] = useState<string | null>(null);
     const [messages, setMessages] = useState<Array<ChatMessage>>([])
     const [modelLists, setModelLists] = useState<Array<SelectItem>>([])
     const [currentLoadingMessage, setCurrentLoadingMessage] = useState<ChatMessage>();
-    const [sessionId] = useState<string>(props.sessionId || "")
     const scroll = useRef<HTMLDivElement>(null);
-    // const [isLoading, setIsLoading] = useState<boolean>(false)
 
+    // const [isLoading, setIsLoading] = useState<boolean>(false)
+    useImperativeHandle(ref, () => ({
+        loadMessages
+    }));
 
     useEffect(() => {
         const getModels = async () => {
@@ -134,20 +138,27 @@ export default function ChatGPT(props: ChatGPTProps) {
                     })
                 })
         }
-        const getMessages = async () => {
-            return await fetch("/api/chatgpt/message?".concat(new URLSearchParams({ sessionId: sessionId }).toString()))
-                .then<Array<ChatMessage>>(response => response.json())
 
-        }
         getModels().then((models) => {
             setCurrentModel(models.at(0)?.value || null)
             setModelLists(models)
         })
-        getMessages().then((messages) => {
+
+        loadMessages().then()
+    }, [])
+
+    const loadMessages = async () => {
+        const sessionId = getCookieByName(CHAT_SESSION_ID)
+        if(!sessionId){
+            setMessages([])
+            return
+        }
+        fetch("/api/chatgpt/message?".concat(new URLSearchParams({ sessionId }).toString()))
+            .then<Array<ChatMessage>>(response => response.json()).then((messages) => {
             setMessages(messages)
             setTimeout(() => scrollToBottom("smooth"), 100)
         })
-    }, [])
+    }
 
     const sendMessage = async (model: string, message: ChatMessage) => {
         const headers = {
@@ -156,7 +167,7 @@ export default function ChatGPT(props: ChatGPTProps) {
         const body = {
             model,
             message,
-            sessionId
+            sessionId: getCookieByName(CHAT_SESSION_ID)
         }
         const requestInit: RequestInit = {
             method: HttpMethod.POST,
@@ -175,6 +186,7 @@ export default function ChatGPT(props: ChatGPTProps) {
             if(done){
                 setMessages((prev) => [...prev, resMessage])
                 setCurrentLoadingMessage(undefined)
+                loadSession()
                 break
             }
             resMessage.content = resMessage.content.concat(decoder.decode(value))
@@ -204,6 +216,12 @@ export default function ChatGPT(props: ChatGPTProps) {
         setMessages((prev) => [...messages, sendChatMessage])
         currentModel ? sendMessage(currentModel, sendChatMessage) : null
         scrollToBottom()
+    }
+
+    const onModelChanged = (model: string) => {
+        deleteCookie(CHAT_SESSION_ID)
+        loadMessages().then()
+        setCurrentModel(model)
     }
 
     const scrollToBottom = (behavior: ScrollBehavior = 'auto') =>
@@ -306,7 +324,7 @@ export default function ChatGPT(props: ChatGPTProps) {
                         value={currentModel}
                         data={modelLists || []}
                         size="sm"
-                        onChange={setCurrentModel}
+                        onChange={onModelChanged}
                     />
                 </Stack>
                 <Stack
@@ -347,4 +365,4 @@ export default function ChatGPT(props: ChatGPTProps) {
             </Stack>
         </Container>
     )
-}
+})

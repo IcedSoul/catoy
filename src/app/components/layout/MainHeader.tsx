@@ -81,15 +81,14 @@ export default function MainHeader({ opened, setOpened }: Props){
     return (
         <Header height={56} className={classes.header}>
             <Container className={classes.mainSection} fluid>
-                <Group position="apart">
-                    <Group position="left">
+                <Group position="apart" spacing="xs">
+                    <Group position="left" spacing="xs">
                         <Burger
                             className={classes.burger}
                             opened={opened}
                             onClick={() => setOpened((o: boolean) => !o)}
                             size="sm"
                             color={theme.colors.gray[6]}
-                            mr="xl"
                         />
                         <CatoyLogo/>
                     </Group>

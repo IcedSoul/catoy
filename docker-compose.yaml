@@ -1,6 +1,6 @@
 version: '3'
 services:
-  db:
+  mongodb:
     image: mongo
     ports:
       - '27017:27017'
@@ -15,7 +15,7 @@ services:
 
   catoy:
     build: .
-    image: uswccr.ccs.tencentyun.com/xiaofeng/catoy:v0.1
+    image: uswccr.ccs.tencentyun.com/xiaofeng/catoy:release-v1.0.2
     restart: always
     ports:
       - "3000:3000"

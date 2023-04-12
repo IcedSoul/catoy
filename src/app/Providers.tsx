@@ -19,7 +19,7 @@ export default function Providers({ children }: ProvidersProps) {
           }}
       >
         <SessionProvider>
-          {children}
+            {children}
         </SessionProvider>
       </MantineProvider>
   )

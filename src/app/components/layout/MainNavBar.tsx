@@ -12,8 +12,8 @@ import {
     UnstyledButton
 } from "@mantine/core";
 import {IconBrandHipchat, IconCheckbox, IconPlus, IconSearch, IconUser} from "@tabler/icons-react";
-import {useEffect, useState} from "react";
-import {ChatSession} from "@/common/ChatGPTCommon";
+import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
+import {ChatSession, NavBarRef} from "@/common/ChatGPTCommon";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -132,24 +132,30 @@ const toys = [
     { emoji: '🙈', label: 'Debts' },
     { emoji: '💁‍♀️', label: 'Customers' },
 ];
-type Props = {
+type NvaBarProps = {
     opened: boolean
-    setChatSession: (chatSession: ChatSession) => void
+    setChatSession: (chatSession?: ChatSession) => void
 }
 
-export default function MainNavBar({ opened, setChatSession }: Props) {
+export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatSession }: NvaBarProps, ref) => {
     const { classes: styles } = useStyles();
     const [chatSessions, setChatSessions] = useState<Array<ChatSession>>([]);
 
+    useImperativeHandle(ref, () => ({
+        loadSessions
+    }))
+
     useEffect(() => {
-        const getSessions = async () => {
-            fetch("/api/chatgpt/sessions")
-                .then(response => response.json())
-                .then(sessions => {
-                    setChatSessions(sessions)
-                });
-        }
-    })
+        loadSessions().then()
+    }, [])
+
+    const loadSessions = async () => {
+        return fetch("/api/chatgpt/session")
+            .then(response => response.json())
+            .then(sessions => {
+                setChatSessions(sessions)
+            });
+    }
 
     const mainLinks = links.map((link) => (
         <UnstyledButton key={link.label} className={styles.mainLink}>
@@ -162,7 +168,6 @@ export default function MainNavBar({ opened, setChatSession }: Props) {
 
     const collectionLinks = chatSessions.map((session) => (
         <a
-            href="/"
             onClick={() => setChatSession(session)}
             key={session.sessionId}
             className={styles.collectionLink}
@@ -195,8 +200,8 @@ export default function MainNavBar({ opened, setChatSession }: Props) {
                     <Text size="xs" weight={500} color="dimmed">
                         Sessions
                     </Text>
-                    <Tooltip label="Create collection" withArrow position="right">
-                        <ActionIcon variant="default" size={18}>
+                    <Tooltip label="Create new session" withArrow position="right">
+                        <ActionIcon variant="default" size={18} onClick={() => setChatSession()}>
                             <IconPlus size="0.8rem" stroke={1.5} />
                         </ActionIcon>
                     </Tooltip>
@@ -205,5 +210,4 @@ export default function MainNavBar({ opened, setChatSession }: Props) {
             </Navbar.Section>
         </Navbar>
     );
-
-}
+})
