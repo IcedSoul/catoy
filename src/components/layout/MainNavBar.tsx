@@ -11,9 +11,10 @@ import {
     Tooltip,
     UnstyledButton
 } from "@mantine/core";
-import {IconBrandHipchat, IconCheckbox, IconPlus, IconSearch, IconUser} from "@tabler/icons-react";
+import {IconBrandHipchat, IconPlus, IconSearch, IconTrash} from "@tabler/icons-react";
 import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
-import {ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
+import {CHAT_SESSION_ID, ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
+import {getCookieByName} from "@/common/client/common";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -98,8 +99,8 @@ const useStyles = createStyles((theme) => ({
         marginBottom: rem(5),
     },
 
-    collectionLink: {
-        display: 'block',
+    collection: {
+        width: '100%',
         padding: `${rem(8)} ${theme.spacing.xs}`,
         textDecoration: 'none',
         borderRadius: theme.radius.sm,
@@ -111,7 +112,22 @@ const useStyles = createStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
             color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+            cursor: 'pointer',
         },
+    },
+
+    collectionLink: {
+      flexGrow: 1,
+    },
+
+    collectionIcon: {
+        marginRight: theme.spacing.sm,
+        color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+
+        '&:hover': {
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
+            color: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[8],
+        }
     },
 }));
 
@@ -157,6 +173,19 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatS
             });
     }
 
+    const deleteSession = async (sessionId: string) => {
+        return fetch('/api/chatgpt/session?'.concat(new URLSearchParams({ sessionId }).toString()), {
+            method: 'DELETE',
+        })
+            .then(response => response.json())
+            .then(sessions => {
+                setChatSessions(sessions)
+                if(getCookieByName(CHAT_SESSION_ID) === sessionId){
+                    setChatSession()
+                }
+            });
+    }
+
     const mainLinks = links.map((link) => (
         <UnstyledButton key={link.label} className={styles.mainLink}>
             <div className={styles.mainLinkInner}>
@@ -167,18 +196,21 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatS
     ));
 
     const collectionLinks = chatSessions.map((session) => (
-        <a
-            onClick={() => setChatSession(session)}
+        <Group
+            position="apart"
             key={session.sessionId}
-            className={styles.collectionLink}
+            className={styles.collection}
         >
-            <span style={{ marginRight: rem(9), fontSize: rem(16) }}>✨</span>{' '}
-            {session.title}
-        </a>
+            <a onClick={() => setChatSession(session)} className={styles.collectionLink}>
+                <span style={{ marginRight: rem(9), fontSize: rem(16) }}>✨</span>{' '}
+                {session.title}
+            </a>
+            <IconTrash size={16} stroke={1.5} onClick={() => deleteSession(session.sessionId)} className={styles.collectionIcon} />
+        </Group>
     ));
 
     return (
-        <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
+        <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 240, lg: 300 }}>
             <Navbar.Section className={styles.search}>
                 <TextInput
                     placeholder="Search"

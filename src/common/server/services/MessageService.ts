@@ -4,6 +4,7 @@ import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import {redirect} from "next/navigation";
 import {Message} from "@/common/server/repository/Models";
 import {messages} from "@/common/server/repository/Messages";
+import {userUsageLimitsService} from "@/common/server/services/UserUsageLimitService";
 
 
 class MessageService {
@@ -25,7 +26,7 @@ class MessageService {
         if(!session || !session.user || !session.user.email) {
             return redirect('/auth/login')
         }
-        console.log(`session ${JSON.stringify(session)} `)
+        userUsageLimitsService.increaseChatUsage(session.user.email)
         const message: Message = {
             sessionId: sessionId || null,
             userEmail: session.user.email,

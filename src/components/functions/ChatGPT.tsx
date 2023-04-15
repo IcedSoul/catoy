@@ -3,9 +3,11 @@ import {
     Container,
     createStyles,
     Flex,
-    Grid, Loader,
+    Grid,
+    Loader,
     Paper,
-    rem, ScrollArea,
+    rem,
+    ScrollArea,
     Select,
     SelectItem,
     Space,
@@ -14,7 +16,7 @@ import {
     ThemeIcon
 } from '@mantine/core';
 
-import {IconBrandOpenai, IconBrandTelegram, IconUfo} from "@tabler/icons-react";
+import {IconBrandOpenai, IconBrandTelegram, IconCursorText, IconUfo} from "@tabler/icons-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 import './markdown-styles.css'
@@ -23,7 +25,14 @@ import {tomorrow} from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {CodeProps} from "react-markdown/lib/ast-to-react";
-import {ChatMessage, decoder, HttpMethod, MessageSource, CHAT_SESSION_ID, ChatGPTRef} from "@/common/client/ChatGPTCommon";
+import {
+    CHAT_SESSION_ID,
+    ChatGPTRef,
+    ChatMessage,
+    decoder,
+    HttpMethod,
+    MessageSource
+} from "@/common/client/ChatGPTCommon";
 import {getCookieByName} from "@/common/client/common";
 import {deleteCookie} from "cookies-next";
 
@@ -217,6 +226,10 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
         setMessages((prev) => [...messages, sendChatMessage])
         currentModel ? sendMessage(currentModel, sendChatMessage) : null
         setIsLoading(true)
+        setCurrentLoadingMessage({
+            role: MessageSource.ASSISTANT,
+            content: ""
+        })
         setTimeout(() => scrollToBottom(), 50)
     }
 
@@ -308,6 +321,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                             }
                         }}
                     />
+                    {isLoading && key >= messages.length ? (<IconCursorText size={25} stroke={1.5}/>) : null}
                 </Flex>
                 <Space w="lg"/>
             </Flex>

@@ -2,9 +2,11 @@ import NextAuth, {NextAuthOptions} from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
-import { users } from "@/common/server/repository/Users";
+import {users} from "@/common/server/repository/Users";
 import {randomBytes, randomUUID} from "crypto";
 import {User} from "@/common/server/repository/Models";
+import {userService} from "@/common/server/services/UserService";
+import {AccountSource} from "@/common/server/CommonUtils";
 
 enum AuthType {
     LOGIN = "login",
@@ -21,27 +23,16 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials: any) {
                 const { type, name, email, password  } = credentials
-                let user: User | null = null
                 if(type === AuthType.LOGIN){
-                    user = await users.getUserByTypeAndEmail(email, "credentials")
-                    if(user === null){
-                        return null
+                    const authResult = await userService.authenticateUser(email, password, AccountSource.CREDENTIALS)
+                    if(authResult) {
+                        return await userService.getSessionUserByEmailAndSource(email, AccountSource.CREDENTIALS)
                     }
-                    if(user.password !== password){
-                        return null
-                    }
-                    return user
                 } else if(type === AuthType.REGISTER){
-                    user = {
-                        id: 'credentials',
-                        email: email,
-                        name: name,
-                        password: password,
-                        image: "https://avatars.githubusercontent.com/u/25154432?v=4"
+                    const registerResult = await userService.registerUser(email, name, password, AccountSource.CREDENTIALS)
+                    if(registerResult){
+                        return await userService.getSessionUserByEmailAndSource(email, AccountSource.CREDENTIALS)
                     }
-                    users.addUser(user).then()
-                    console.log(`user return register ${JSON.stringify(user)}`)
-                    return user
                 }
                 return null
             },
@@ -88,19 +79,13 @@ export const authOptions: NextAuthOptions = {
             return baseUrl
         },
         async jwt({ token, user, account, profile, trigger }) {
-            if(!user?.email){ return token }
+            if(!user?.email || trigger !== "signIn"){ return token }
             const type: string = account?.provider || 'unknown'
-            const nowUser = await users.getUserByTypeAndEmail(user.email)
-            if(trigger === "signUp" || !nowUser){
-                const saveUser: User = {
-                    id: type,
-                    email: user.email || '',
-                    name: user.name || '',
-                    password: 'github',
-                    image: user.image || ''
-                }
-                users.addUser(saveUser).then()
+            const source: AccountSource | null = type === 'github' ? AccountSource.GITHUB : type === 'google' ? AccountSource.GOOGLE : null
+            if(!source){
+                return token
             }
+            userService.registerUser(user.email, user.name || user.email, 'None', source).then()
             return token
         }
     },

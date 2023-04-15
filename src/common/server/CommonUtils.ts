@@ -81,3 +81,11 @@ export const getUserInfo = async (): Promise<SessionUser> => {
         image: session.user.image || ""
     }
 }
+
+export enum AccountSource {
+    GOOGLE = 'google',
+    GITHUB = 'github',
+    CREDENTIALS = 'credentials'
+}
+
+export const DEFAULT_AVATAR = '/avatars/default.png'

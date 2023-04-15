@@ -1,6 +1,7 @@
-import {Collection} from "mongodb";
+import {Collection, Filter} from "mongodb";
 import {mongoClient, mongoDbInfo} from "@/common/server/mongo/MongoClient";
 import {User} from "@/common/server/repository/Models";
+import {AccountSource} from "@/common/server/CommonUtils";
 
 export interface UserPojo extends Document, User {
 }
@@ -12,8 +13,8 @@ class Users {
         this.usersCollection = mongoClient.getCollection<UserPojo>(mongoDbInfo.collections.User)
     }
 
-    async getUserByTypeAndEmail(email: string, id?: string): Promise<User | null> {
-        const query = {email, id}
+    async getUserByEmailAndSource(email: string, source?: AccountSource): Promise<User | null> {
+        const query: Filter<UserPojo> = {email: email, sources: source ? source : {$exists: true}}
         return this.usersCollection.find(query).toArray().then((users) => {
             if (users.length === 0) {
                 return null

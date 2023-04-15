@@ -6,7 +6,8 @@ export const mongoDbInfo = {
     collections: {
         Message: 'message',
         User: 'user',
-        Session: 'session'
+        Session: 'session',
+        UserUsageLimits: 'userUsageLimits',
     }
 }
 

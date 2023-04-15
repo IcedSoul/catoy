@@ -7,6 +7,7 @@ import {createWebReadableStreamResponse, getUserInfo, OpenAiApi, SupportModels} 
 import {messageService} from "@/common/server/services/MessageService";
 import {randomUUID} from "crypto";
 import {sessions} from "@/common/server/repository/Sessions";
+import {sessionService} from "@/common/server/services/SessionService";
 
 interface GetMessageParams {
     model: string,
@@ -15,17 +16,23 @@ interface GetMessageParams {
     historyMessage: Array<ChatMessage>
 }
 
-
 export async function POST(request: Request){
     const user: SessionUser = await getUserInfo()
     const params: GetMessageParams = await request.json()
     params.historyMessage = []
     if(params.sessionId){
         params.historyMessage = await messageService.getChatMessages(user.email, params.sessionId)
-    } else {
+        if(params.historyMessage.length === 0){
+            params.sessionId = ""
+        }
+        const contextLimit = parseInt(process.env.DEFAULT_CHAT_COTEXT_LIMIT || "50")
+        if(params.historyMessage.length > contextLimit){
+            params.historyMessage = params.historyMessage.slice(-contextLimit)
+        }
+    }
+    if(!params.sessionId){
         params.sessionId = randomUUID()
-        sessions.addSession({ sessionId: params.sessionId, title: params.message.content.slice(0, 12).concat("..."), userEmail: user.email }).then()
-
+        sessionService.createSession(params.sessionId, params.message.content.slice(0, 12).concat("..."), user.email).then()
     }
     messageService.saveMessage(params.message, params.sessionId).then()
     const completion: AxiosResponse | null = await getOpenAIResponse(params)
