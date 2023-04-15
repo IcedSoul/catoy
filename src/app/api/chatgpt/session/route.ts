@@ -1,4 +1,4 @@
-import {SessionUser} from "@/common/ChatGPTCommon";
+import {SessionUser} from "@/common/client/ChatGPTCommon";
 import {getUserInfo} from "@/common/server/CommonUtils";
 import {sessions} from "@/common/server/repository/Sessions";
 import {Session} from "@/common/server/repository/Models";

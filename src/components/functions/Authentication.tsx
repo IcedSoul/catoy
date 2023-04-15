@@ -13,7 +13,7 @@ import {
     Anchor,
     Stack,
 } from '@mantine/core';
-import {GithubButton, GoogleButton} from "@/common/SocialButtons";
+import {GithubButton, GoogleButton} from "@/components/social-button/SocialButtons";
 import {signIn, useSession} from "next-auth/react";
 import {redirect} from "next/navigation";
 

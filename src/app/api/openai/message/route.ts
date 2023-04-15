@@ -1,7 +1,7 @@
 import {
     CHAT_SESSION_ID,
     ChatMessage, SessionUser
-} from "@/common/ChatGPTCommon";
+} from "@/common/client/ChatGPTCommon";
 import {AxiosResponse} from "axios";
 import {createWebReadableStreamResponse, getUserInfo, OpenAiApi, SupportModels} from "@/common/server/CommonUtils";
 import {messageService} from "@/common/server/services/MessageService";

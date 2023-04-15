@@ -1,4 +1,4 @@
-import {SessionUser} from "@/common/ChatGPTCommon";
+import {SessionUser} from "@/common/client/ChatGPTCommon";
 import {users} from "@/common/server/repository/Users";
 
 class UserService{

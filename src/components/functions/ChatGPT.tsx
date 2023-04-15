@@ -19,12 +19,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 import './markdown-styles.css'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
-import {tomorrow} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import {tomorrow} from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
-import React, {forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {CodeProps} from "react-markdown/lib/ast-to-react";
-import {ChatMessage, decoder, HttpMethod, MessageSource, CHAT_SESSION_ID, ChatGPTRef} from "@/common/ChatGPTCommon";
-import {getCookieByName} from "@/common/common";
+import {ChatMessage, decoder, HttpMethod, MessageSource, CHAT_SESSION_ID, ChatGPTRef} from "@/common/client/ChatGPTCommon";
+import {getCookieByName} from "@/common/client/common";
 import {deleteCookie} from "cookies-next";
 
 const useStyles = createStyles((theme) => ({

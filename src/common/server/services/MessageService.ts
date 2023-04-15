@@ -1,4 +1,4 @@
-import {ChatMessage} from "@/common/ChatGPTCommon";
+import {ChatMessage} from "@/common/client/ChatGPTCommon";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import {redirect} from "next/navigation";

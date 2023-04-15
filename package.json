@@ -1,5 +1,5 @@
 {
-  "name": "catools",
+  "name": "catoy",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -34,7 +34,6 @@
     "react-syntax-highlighter": "^15.5.0",
     "rehype-highlight": "^6.0.0",
     "remark-gfm": "^3.0.1",
-    "swr": "^2.1.1",
     "typescript": "5.0.2"
   },
   "devDependencies": {

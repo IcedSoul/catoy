@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import {IconBrandHipchat, IconCheckbox, IconPlus, IconSearch, IconUser} from "@tabler/icons-react";
 import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
-import {ChatSession, NavBarRef} from "@/common/ChatGPTCommon";
+import {ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
 
 const useStyles = createStyles((theme) => ({
     navbar: {

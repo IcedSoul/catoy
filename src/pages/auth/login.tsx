@@ -1,10 +1,9 @@
 'use client';
 
-import {AuthenticationForm} from "@/app/components/functions/Authentication";
+import {AuthenticationForm} from "@/components/functions/Authentication";
 import {Box, Center} from "@mantine/core";
-import {Suspense} from "react";
 
-export default function Login() {
+export default function Page() {
     return (
         <main>
             <Center w="100%" h="80vh" mx="auto">

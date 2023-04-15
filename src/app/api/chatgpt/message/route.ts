@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import { messages } from "@/common/server/repository/Messages";
-import {SessionUser} from "@/common/ChatGPTCommon";
+import {SessionUser} from "@/common/client/ChatGPTCommon";
 import {getUserInfo} from "@/common/server/CommonUtils";
 
 

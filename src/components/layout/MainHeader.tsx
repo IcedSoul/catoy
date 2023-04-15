@@ -19,9 +19,9 @@ import {
     IconSwitchHorizontal,
 } from "@tabler/icons-react";
 import {signIn, signOut, useSession} from "next-auth/react";
-import CatoyLogo from "@/app/components/parts/CatoyLogo";
+import CatoyLogo from "@/components/parts/CatoyLogo";
 import Link from "next/link";
-import {SessionUser} from "@/common/ChatGPTCommon";
+import {SessionUser} from "@/common/client/ChatGPTCommon";
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -76,7 +76,6 @@ export default function MainHeader({ opened, setOpened }: Props){
     const [userMenuOpened, setUserMenuOpened] = useState(false);
     const { data: session } = useSession()
     const { user } = session || { user: null }
-    console.log("MainHeader: user: ", user);
 
     return (
         <Header height={56} className={classes.header}>

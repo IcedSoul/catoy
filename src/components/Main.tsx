@@ -5,9 +5,9 @@ import {
 import {MainNavBar} from "./layout/MainNavBar";
 import {ChatGPT} from "./functions/ChatGPT";
 import React, {useRef, useState} from "react";
-import MainHeader from "@/app/components/layout/MainHeader";
-import {CHAT_SESSION_ID, ChatGPTRef, ChatSession, NavBarRef} from "@/common/ChatGPTCommon";
-import {addCookie, getCookieByName} from "@/common/common";
+import MainHeader from "@/components/layout/MainHeader";
+import {CHAT_SESSION_ID, ChatGPTRef, ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
+import {addCookie, getCookieByName} from "@/common/client/common";
 import {deleteCookie} from "cookies-next";
 
 export default function Main() {

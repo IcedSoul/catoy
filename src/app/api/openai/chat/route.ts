@@ -1,4 +1,4 @@
-import {ChatMessage, SessionUser} from "@/common/ChatGPTCommon";
+import {ChatMessage, SessionUser} from "@/common/client/ChatGPTCommon";
 import {AxiosResponse} from "axios";
 import {createWebReadableStreamResponse, getUserInfo, OpenAiApi} from "@/common/server/CommonUtils";
 import {messageService} from "@/common/server/services/MessageService";

@@ -1,5 +1,5 @@
 import {IncomingMessage} from "http";
-import {ChatMessage, encoder, MessageSource, SessionUser} from "@/common/ChatGPTCommon";
+import {ChatMessage, encoder, MessageSource, SessionUser} from "@/common/client/ChatGPTCommon";
 import {Configuration, OpenAIApi} from "openai";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";

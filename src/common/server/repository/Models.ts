@@ -1,4 +1,4 @@
-import {ChatMessage, SessionUser} from "@/common/ChatGPTCommon";
+import {ChatMessage, SessionUser} from "@/common/client/ChatGPTCommon";
 
 export interface User extends SessionUser{
     _id?: string,
