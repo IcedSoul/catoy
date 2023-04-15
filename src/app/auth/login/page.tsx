@@ -2,6 +2,7 @@
 
 import {AuthenticationForm} from "@/app/components/functions/Authentication";
 import {Box, Center} from "@mantine/core";
+import {Suspense} from "react";
 
 export default function Login() {
     return (

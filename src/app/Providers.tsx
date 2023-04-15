@@ -13,7 +13,6 @@ export default function Providers({ children }: ProvidersProps) {
           withGlobalStyles
           withNormalizeCSS
           theme={{
-              /** Put your mantine theme override here */
               colorScheme: 'light',
               loader: 'bars'
           }}

@@ -1,5 +1,3 @@
-`use client`;
-
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
@@ -16,7 +14,7 @@ import {
     Stack,
 } from '@mantine/core';
 import {GithubButton, GoogleButton} from "@/common/SocialButtons";
-import {signIn, signOut, useSession} from "next-auth/react";
+import {signIn, useSession} from "next-auth/react";
 import {redirect} from "next/navigation";
 
 interface UserValues {
@@ -67,7 +65,7 @@ export function AuthenticationForm(props: PaperProps) {
     return (
         <Paper radius="md" p="xl" withBorder {...props}>
             <Text size="lg" weight={500}>
-                Welcome to Mantine, {type} with
+                Welcome to Catoy, {type} with
             </Text>
 
             <Group grow mb="md" mt="md">
@@ -92,7 +90,7 @@ export function AuthenticationForm(props: PaperProps) {
                     <TextInput
                         required
                         label="Email"
-                        placeholder="hello@mantine.dev"
+                        placeholder="hello@catoy.cn"
                         value={form.values.email}
                         onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
                         error={form.errors.email && 'Invalid email'}

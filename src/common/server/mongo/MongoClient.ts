@@ -1,6 +1,6 @@
 import {Collection, MongoClient} from "mongodb";
 
-const url = 'mongodb://root:root@localhost:27017/admin'
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017'
 export const mongoDbInfo = {
     database: 'catoy',
     collections: {

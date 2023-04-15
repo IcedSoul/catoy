@@ -1,38 +1,57 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Welcome to Catoy, let's do some cat stuff!
+looking for fun? you're in the right place!
+
+
+## Environment
+node version > 18.15.5
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
+# or
+yarn install
+
+# run dev
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Structure
+this project is based on next.js 13 and Mantine UI, using next-auth for authentication. 
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+next app directory is the new feature of next.js 13.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+the code structure is like this:
+```
+- src                                   # source code
+  - pages                               # old version of next.js, just for next-auth, which is not support next app directory.
+    - api
+        - auth
+            - [...nextauth].ts          # next-auth all config
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+  - app                                 # app directory
+    - api                               # all api defined here
+        - ...
+    - components                        # most components of page
+        - ...
+    - page.tsx                          # index page
+    - layout.tsx                        # global layout config
+- public                                # static files
+- next.config.js                        # next.js config
+- tsconfig.json                         # typescript config
+- package.json                          # npm config
+- README.md                             #this file
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Build & Deploy
 
-## Learn More
+before build, you need to do some configuration.
 
-To learn more about Next.js, take a look at the following resources:
+1. set the environment variables in `.env.production` file.
+2. generate ssh key and copy the public key to the server.
+3. install docker and docker-compose.
+4. login docker registry with specify password. 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Then, run deploy.bat and wait, the website will be deployed to the server.

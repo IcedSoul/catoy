@@ -3,7 +3,7 @@ import {
     Container,
     createStyles,
     Flex,
-    Grid,
+    Grid, Loader,
     Paper,
     rem, ScrollArea,
     Select,
@@ -122,8 +122,8 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
     const [modelLists, setModelLists] = useState<Array<SelectItem>>([])
     const [currentLoadingMessage, setCurrentLoadingMessage] = useState<ChatMessage>();
     const scroll = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    // const [isLoading, setIsLoading] = useState<boolean>(false)
     useImperativeHandle(ref, () => ({
         loadMessages
     }));
@@ -186,6 +186,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
             if(done){
                 setMessages((prev) => [...prev, resMessage])
                 setCurrentLoadingMessage(undefined)
+                setIsLoading(false)
                 loadSession()
                 break
             }
@@ -215,7 +216,8 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
         }
         setMessages((prev) => [...messages, sendChatMessage])
         currentModel ? sendMessage(currentModel, sendChatMessage) : null
-        scrollToBottom()
+        setIsLoading(true)
+        setTimeout(() => scrollToBottom(), 50)
     }
 
     const onModelChanged = (model: string) => {
@@ -255,7 +257,13 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                             variant="gradient"
                             gradient={{ deg: 0, from: 'cyan', to: 'teal' }}
                         >
-                            <IconBrandOpenai className={classes.icon} size={rem(20)} stroke={1.5} />
+                            {
+                                isLoading && key >= messages.length ? (
+                                    <Loader color="gray.0" size="xs" variant="dots" />
+                                ) : (
+                                    <IconBrandOpenai className={classes.icon} size={rem(20)} stroke={1.5} />
+                                )
+                            }
                         </ThemeIcon>
                     ) : (
                         <ThemeIcon
@@ -357,7 +365,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                         />
                     </Grid.Col>
                     <Grid.Col span={1}>
-                        <ActionIcon variant="filled" size="2rem" w="100%" onClick={onSendMessage}>
+                        <ActionIcon variant="filled" size="2rem" w="100%" onClick={onSendMessage} disabled={isLoading}>
                             <IconBrandTelegram size="1rem" />
                         </ActionIcon>
                     </Grid.Col>

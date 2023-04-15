@@ -79,11 +79,13 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         session({ session, token, user }) {
-            console.log(`session ${JSON.stringify(session)}, user ${JSON.stringify(user)}`)
             return session // The return type will match the one returned in `useSession()`
         },
         async signIn({account, profile}) {
             return true
+        },
+        async redirect({ url, baseUrl }) {
+            return baseUrl
         },
         async jwt({ token, user, account, profile, trigger }) {
             if(!user?.email){ return token }
@@ -99,7 +101,6 @@ export const authOptions: NextAuthOptions = {
                 }
                 users.addUser(saveUser).then()
             }
-            console.log(`token ${JSON.stringify(token)}, user ${JSON.stringify(user)}`)
             return token
         }
     },

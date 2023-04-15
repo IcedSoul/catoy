@@ -53,7 +53,6 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
                             if(res.object.startsWith('chat.completion')){
                                 const msg = res.choices[0].delta
                                 const content = msg.content ? Buffer.from(msg.content, 'utf-8').toString() : null
-                                console.log(content)
                                 content ? chatMsg.content = chatMsg.content.concat(content) : null
                                 content ? controller.enqueue(encoder.encode(content)) : null
                             } else if(res.object.startsWith('text_completion')){
