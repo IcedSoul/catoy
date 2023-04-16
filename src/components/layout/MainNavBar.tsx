@@ -122,6 +122,7 @@ const useStyles = createStyles((theme) => ({
 
     collectionIcon: {
         color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+        flexGrow: 0,
 
         '&:hover': {
             backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
@@ -149,10 +150,11 @@ const toys = [
 ];
 type NvaBarProps = {
     opened: boolean
+    setOpened: (opened: boolean) => void
     setChatSession: (chatSession?: ChatSession) => void
 }
 
-export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatSession }: NvaBarProps, ref) => {
+export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setOpened, setChatSession }: NvaBarProps, ref) => {
     const { classes: styles } = useStyles();
     const [chatSessions, setChatSessions] = useState<Array<ChatSession>>([]);
 
@@ -172,7 +174,8 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatS
             });
     }
 
-    const deleteSession = async (sessionId: string) => {
+    const deleteSession = async (sessionId: string, event: any) => {
+        event.stopPropagation()
         return fetch('/api/chatgpt/session?'.concat(new URLSearchParams({ sessionId }).toString()), {
             method: 'DELETE',
         })
@@ -183,6 +186,11 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatS
                     setChatSession()
                 }
             });
+    }
+
+    const onSelectSession = (session: ChatSession) => {
+        setChatSession(session)
+        setOpened(!opened)
     }
 
     const mainLinks = links.map((link) => (
@@ -199,12 +207,13 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setChatS
             position="apart"
             key={session.sessionId}
             className={styles.collection}
+            onClick={() => onSelectSession(session)}
         >
-            <a onClick={() => setChatSession(session)} className={styles.collectionLink}>
+            <a className={styles.collectionLink}>
                 <span style={{ marginRight: rem(9), fontSize: rem(16) }}>✨</span>{' '}
                 {session.title}
             </a>
-            <IconTrash size={16} stroke={1.5} onClick={() => deleteSession(session.sessionId)} className={styles.collectionIcon} />
+            <IconTrash size={16} stroke={1.5} onClick={(event) => deleteSession(session.sessionId, event)} className={styles.collectionIcon} />
         </Group>
     ));
 

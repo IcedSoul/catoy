@@ -13,7 +13,7 @@ import {
     Space,
     Stack,
     Textarea,
-    ThemeIcon
+    ThemeIcon, useMantineColorScheme
 } from '@mantine/core';
 
 import {IconBrandOpenai, IconBrandTelegram, IconCursorText, IconUfo} from "@tabler/icons-react";
@@ -125,7 +125,6 @@ const useStyles = createStyles((theme) => ({
             '50%': { opacity: 0 },
         }
     },
-
 }));
 
 interface ChatGPTProps {
@@ -141,6 +140,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
     const [currentLoadingMessage, setCurrentLoadingMessage] = useState<ChatMessage>();
     const scroll = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const { colorScheme } = useMantineColorScheme();
 
     useImperativeHandle(ref, () => ({
         loadMessages
@@ -305,7 +305,8 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                 >
                     {/* eslint-disable-next-line react/no-children-prop */}
                     <ReactMarkdown children={ message?.content || ""}
-                        className="markdown-body"
+                        // className={classes.markdownBody}
+                        className={`markdown-body ${colorScheme}`}
                         remarkPlugins={[remarkGfm]}
                         components={{
                             code({node, inline, className, children, style, ...props}: CodeProps) {
@@ -316,7 +317,6 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                                         language={match[1]}
                                         showLineNumbers
                                         wrapLines
-                                        wrapLongLines
                                         PreTag="div"
                                         {...props}
                                     >

@@ -38,7 +38,7 @@ export default function Main() {
             }}
             navbarOffsetBreakpoint="sm"
             asideOffsetBreakpoint="sm"
-            navbar={<MainNavBar opened={opened} setChatSession={onSessionSelected} ref={navBar}/>}
+            navbar={<MainNavBar opened={opened} setOpened={setOpened} setChatSession={onSessionSelected} ref={navBar}/>}
             header={<MainHeader opened={opened} setOpened={setOpened}/>}
             h="100%"
         >

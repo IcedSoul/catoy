@@ -1,4 +1,5 @@
 import {
+    ActionIcon,
     Avatar,
     Burger, Button, Container,
     createStyles,
@@ -7,22 +8,19 @@ import {
     Menu,
     rem,
     Text,
-    UnstyledButton,
+    UnstyledButton, useMantineColorScheme,
 } from "@mantine/core";
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {
     IconChevronDown,
     IconHeart, IconLogout,
-    IconMessage,
+    IconMessage, IconMoonStars,
     IconSettings,
-    IconStar,
+    IconStar, IconSun,
     IconSwitchHorizontal,
 } from "@tabler/icons-react";
 import {signIn, signOut, useSession} from "next-auth/react";
 import CatoyLogo from "@/components/parts/CatoyLogo";
-import Link from "next/link";
-import {SessionUser} from "@/common/client/ChatGPTCommon";
-
 const useStyles = createStyles((theme) => ({
     header: {
         paddingTop: theme.spacing.sm,
@@ -76,6 +74,7 @@ export default function MainHeader({ opened, setOpened }: Props){
     const [userMenuOpened, setUserMenuOpened] = useState(false);
     const { data: session } = useSession()
     const { user } = session || { user: null }
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     return (
         <Header height={56} className={classes.header}>
@@ -91,7 +90,18 @@ export default function MainHeader({ opened, setOpened }: Props){
                         />
                         <CatoyLogo/>
                     </Group>
-                    <Group position="right">
+                    <Group position="right" spacing="xs">
+                        <ActionIcon
+                            onClick={() => toggleColorScheme()}
+                            size="lg"
+                            sx={(theme) => ({
+                                backgroundColor:
+                                    theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+                                color: theme.colorScheme === 'dark' ? theme.colors.gray[1] : theme.colors.gray[7],
+                            })}
+                        >
+                            {colorScheme === 'dark' ? <IconSun size="1.2rem" /> : <IconMoonStars size="1.2rem" />}
+                        </ActionIcon>
                         {
                             session && user ? (
                                 <Menu

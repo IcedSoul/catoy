@@ -54,7 +54,6 @@ export function AuthenticationForm(props: PaperProps) {
                 type: type,
                 redirect: false,
             }).then(res => {
-                console.log(res)
                 if(res && res.ok){
                     notifications.show({
                         title: 'Login Success',
