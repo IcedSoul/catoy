@@ -15,7 +15,8 @@ import {
 } from '@mantine/core';
 import {GithubButton, GoogleButton} from "@/components/social-button/SocialButtons";
 import {signIn, useSession} from "next-auth/react";
-import {redirect} from "next/navigation";
+import {notifications} from "@mantine/notifications";
+import {useRouter} from "next/router";
 
 interface UserValues {
     name?: string;
@@ -26,6 +27,7 @@ interface UserValues {
 
 
 export function AuthenticationForm(props: PaperProps) {
+    const router = useRouter();
     const [type, toggle] = useToggle(['login', 'register']);
     const { data: session } = useSession()
 
@@ -44,22 +46,34 @@ export function AuthenticationForm(props: PaperProps) {
     });
 
     const onSubmit = (values: UserValues) => {
-        console.log(`login:  ${values.email} ${values.password}`)
         signIn('credentials',
             {
                 name: values.name,
                 email: values.email,
                 password: values.password,
                 type: type,
-                redirect: true,
-                callbackUrl: '/'
-            }).then((res) => {
-            console.log(res)
-        })
+                redirect: false,
+            }).then(res => {
+                console.log(res)
+                if(res && res.ok){
+                    notifications.show({
+                        title: 'Login Success',
+                        message: "Enjoy your time here!",
+                        color: 'green'
+                    })
+                    router.push('/').then()
+                } else {
+                    notifications.show({
+                        title: 'Login failed',
+                        message: res?.error || 'Unknown error',
+                        color: 'red'
+                    })
+                }
+            })
     };
 
     if(session){
-        redirect('/')
+        router.push('/').then()
     }
 
     return (

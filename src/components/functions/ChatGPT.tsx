@@ -116,7 +116,16 @@ const useStyles = createStyles((theme) => ({
     chatArea: {
         flexGrow: 1,
         overflow: "hidden"
-    }
+    },
+    cursorPointer: {
+        margin: "auto 0",
+        color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+        animation: 'cursorPointerBlink 0.5s infinite',
+        '@keyframes cursorPointerBlink': {
+            '50%': { opacity: 0 },
+        }
+    },
+
 }));
 
 interface ChatGPTProps {
@@ -321,7 +330,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                             }
                         }}
                     />
-                    {isLoading && key >= messages.length ? (<IconCursorText size={25} stroke={1.5}/>) : null}
+                    {/*{(isLoading && key >= messages.length) || true ? (<IconCursorText size={22} stroke={1.5} className={classes.cursorPointer}/>) : null}*/}
                 </Flex>
                 <Space w="lg"/>
             </Flex>

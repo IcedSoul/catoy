@@ -4,6 +4,7 @@ import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
 import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
 import {SessionProvider} from "next-auth/react";
+import {Notifications} from "@mantine/notifications";
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
     const { Component, pageProps } = props;
@@ -25,6 +26,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 
             <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
                 <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+                    <Notifications />
                     <SessionProvider session={pageProps.session}>
                         <Component {...pageProps} />
                     </SessionProvider>

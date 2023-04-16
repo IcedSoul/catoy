@@ -3,6 +3,8 @@ import {users} from "@/common/server/repository/Users";
 import {User} from "@/common/server/repository/Models";
 import {AccountSource, DEFAULT_AVATAR} from "@/common/server/CommonUtils";
 import {userUsageLimitsService} from "@/common/server/services/UserUsageLimitService";
+import {ErrorMessage, exceptionMessages, ExceptionType} from "@/common/server/utils/ExceptionMessage";
+import {notifications} from "@mantine/notifications";
 
 class UserService{
 
@@ -32,7 +34,10 @@ class UserService{
     authenticateUser = async (email: string, password: string, source: AccountSource): Promise<boolean> => {
         const user = await users.getUserByEmailAndSource(email, source)
         if(user){
-            return user.password === password
+            if(user.password !== password){
+                throw new ErrorMessage(ExceptionType.NORMAL, exceptionMessages.PASSWORD_ERROR)
+            }
+            return true
         }
         return false
     }

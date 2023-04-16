@@ -29,7 +29,7 @@ class Users {
     }
 
     async updateUser(user: User): Promise<boolean> {
-        const updateUser: UserPojo = JSON.parse(JSON.stringify(user))
+        const updateUser = {$set: {sources: user.sources, name: user.name, image: user.image, password: user.password}}
         const query = {email: user.email}
         return this.usersCollection.updateOne(query, updateUser).then(() => true).catch(() => false)
     }

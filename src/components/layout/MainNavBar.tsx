@@ -121,7 +121,6 @@ const useStyles = createStyles((theme) => ({
     },
 
     collectionIcon: {
-        marginRight: theme.spacing.sm,
         color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
 
         '&:hover': {

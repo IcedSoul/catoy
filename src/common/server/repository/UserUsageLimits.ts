@@ -24,7 +24,7 @@ class UserUsageLimits {
     }
 
     async updateUserUsageLimit(userUsageLimit: UserUsageLimit): Promise<boolean> {
-        const updateUserUsageLimit: UserUsageLimitsPojo = JSON.parse(JSON.stringify(userUsageLimit))
+        const updateUserUsageLimit = {$set: {chatUsage: userUsageLimit.chatUsage}}
         const query = {email: userUsageLimit.email}
         return this.userUsageLimitsCollection.updateOne(query, updateUserUsageLimit).then(() => true).catch(() => false)
     }
