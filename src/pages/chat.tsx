@@ -1,12 +1,12 @@
-import Layout from "@/components/layout/Layout";
 import {ChatGPT} from "@/components/functions/ChatGPT";
+import Layout from "@/components/layout/Layout";
 
-export default function HomePage() {
+export default function Chat() {
     return (
         <main>
             <Layout>
                 <ChatGPT/>
             </Layout>
         </main>
-    );
+    )
 }

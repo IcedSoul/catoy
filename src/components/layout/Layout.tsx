@@ -2,30 +2,21 @@ import {
     AppShell,
     useMantineTheme,
 } from '@mantine/core';
-import {MainNavBar} from "./layout/MainNavBar";
-import {ChatGPT} from "./functions/ChatGPT";
+import {MainNavBar} from "./MainNavBar";
+import {ChatGPT} from "../functions/ChatGPT";
 import React, {useRef, useState} from "react";
 import MainHeader from "@/components/layout/MainHeader";
 import {CHAT_SESSION_ID, ChatGPTRef, ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
 import {addCookie, getCookieByName} from "@/common/client/common";
 import {deleteCookie} from "cookies-next";
 
-export default function Main() {
+interface LayoutProps {
+    children: React.ReactNode;
+}
+
+export default function Layout({children}: LayoutProps) {
     const theme = useMantineTheme();
-    const chatGPT = useRef<ChatGPTRef>(null)
-    const navBar = useRef<NavBarRef>(null)
-
     const [opened, setOpened] = useState(false);
-
-    const onSessionSelected = (session?: ChatSession) => {
-        if(session && getCookieByName(CHAT_SESSION_ID) === session.sessionId) return
-        session ? addCookie(CHAT_SESSION_ID, session.sessionId) : deleteCookie(CHAT_SESSION_ID)
-        chatGPT.current?.loadMessages().then()
-    }
-
-    const loadSession = () => {
-        navBar.current?.loadSessions().then()
-    }
 
     return (
         <AppShell
@@ -38,11 +29,11 @@ export default function Main() {
             }}
             navbarOffsetBreakpoint="sm"
             asideOffsetBreakpoint="sm"
-            navbar={<MainNavBar opened={opened} setOpened={setOpened} setChatSession={onSessionSelected} ref={navBar}/>}
+            navbar={<MainNavBar opened={opened} setOpened={setOpened}/>}
             header={<MainHeader opened={opened} setOpened={setOpened}/>}
             h="100%"
         >
-            <ChatGPT ref={chatGPT} loadSession={loadSession}/>
+            {children}
         </AppShell>
     );
 }

@@ -1,11 +1,11 @@
 import Layout from "@/components/layout/Layout";
-import {ChatGPT} from "@/components/functions/ChatGPT";
+import {Completion} from "@/components/completion/Completion";
 
-export default function HomePage() {
+export default function CompletionPage() {
     return (
         <main>
             <Layout>
-                <ChatGPT/>
+                <Completion/>
             </Layout>
         </main>
     );

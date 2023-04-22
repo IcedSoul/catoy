@@ -38,6 +38,7 @@ export async function POST(request: Request){
     const completion: AxiosResponse | null = await getOpenAIResponse(params)
     const response = createWebReadableStreamResponse(completion?.data, params.sessionId)
     response.cookies.set(CHAT_SESSION_ID, params.sessionId)
+
     return response
 }
 

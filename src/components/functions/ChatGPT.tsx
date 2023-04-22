@@ -23,18 +23,18 @@ import './markdown-styles.css'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import {tomorrow} from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
-import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
+import React, { useEffect, useRef, useState} from "react";
 import {CodeProps} from "react-markdown/lib/ast-to-react";
 import {
     CHAT_SESSION_ID,
-    ChatGPTRef,
     ChatMessage,
     decoder,
     HttpMethod,
     MessageSource
 } from "@/common/client/ChatGPTCommon";
-import {getCookieByName} from "@/common/client/common";
-import {deleteCookie} from "cookies-next";
+import {getCookieByName, removeCookie} from "@/common/client/common";
+import {useSessionContext} from "@/components/providers/SessionContextProvider";
+import {notifications} from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -128,10 +128,9 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface ChatGPTProps {
-    loadSession: () => void
 }
 
-export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: ChatGPTProps, ref) => {
+export const ChatGPT = ({}: ChatGPTProps) => {
     const { classes, cx } = useStyles()
     const messageTextArea = useRef<HTMLTextAreaElement>(null)
     const [currentModel, setCurrentModel] = useState<string | null>(null);
@@ -141,10 +140,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
     const scroll = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { colorScheme } = useMantineColorScheme();
-
-    useImperativeHandle(ref, () => ({
-        loadMessages
-    }));
+    const { refreshSession, setRefreshMessages } = useSessionContext()
 
     useEffect(() => {
         const getModels = async () => {
@@ -162,8 +158,14 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
             setModelLists(models)
         })
 
-        loadMessages().then()
+        refreshSession?.()
+        setRefreshMessages(() => refreshMessages)
     }, [])
+
+    const refreshMessages = () => {
+        loadMessages().then()
+    }
+
 
     const loadMessages = async () => {
         const sessionId = getCookieByName(CHAT_SESSION_ID)
@@ -192,7 +194,13 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
             headers,
             body: JSON.stringify(body)
         }
-        const response = await fetch("api/openai/message", requestInit).then(response => response.body)
+        const response = await fetch("api/openai/message", requestInit).then(response => response.body).catch(() => {
+            notifications.show({
+                title: 'Server error',
+                message: "Please try again later or start a new session.",
+                color: 'red'
+            })
+        })
         if(!response) return
         const reader = response.getReader()
         const resMessage: ChatMessage = {
@@ -205,7 +213,7 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
                 setMessages((prev) => [...prev, resMessage])
                 setCurrentLoadingMessage(undefined)
                 setIsLoading(false)
-                loadSession()
+                refreshSession?.()
                 break
             }
             resMessage.content = resMessage.content.concat(decoder.decode(value))
@@ -243,8 +251,8 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
     }
 
     const onModelChanged = (model: string) => {
-        deleteCookie(CHAT_SESSION_ID)
-        loadMessages().then()
+        removeCookie(CHAT_SESSION_ID)
+        refreshMessages()
         setCurrentModel(model)
     }
 
@@ -396,4 +404,4 @@ export const ChatGPT = forwardRef<ChatGPTRef, ChatGPTProps>(({loadSession}: Chat
             </Stack>
         </Container>
     )
-})
+}

@@ -11,10 +11,12 @@ import {
     Tooltip,
     UnstyledButton
 } from "@mantine/core";
-import {IconBrandHipchat, IconPlus, IconSearch, IconTrash} from "@tabler/icons-react";
-import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
-import {CHAT_SESSION_ID, ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
-import {getCookieByName} from "@/common/client/common";
+import {IconBrandHipchat, IconBrandVscode, IconPlus, IconSearch, IconTrash} from "@tabler/icons-react";
+import {useEffect, useState} from "react";
+import {CHAT_SESSION_ID, ChatSession} from "@/common/client/ChatGPTCommon";
+import {addCookie, getCookieByName, removeCookie} from "@/common/client/common";
+import {useSessionContext} from "@/components/providers/SessionContextProvider";
+import Router from 'next/router'
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -132,8 +134,8 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const links = [
-    { icon: IconBrandHipchat, label: 'ChatGPT' },
-    // { icon: IconCheckbox, label: 'Tasks' },
+    { icon: IconBrandHipchat, label: 'ChatGPT', route: '/chat' },
+    { icon: IconBrandVscode, label: 'Completion', route: '/completion' },
     // { icon: IconUser, label: 'Contacts' },
 ];
 
@@ -151,19 +153,16 @@ const toys = [
 type NvaBarProps = {
     opened: boolean
     setOpened: (opened: boolean) => void
-    setChatSession: (chatSession?: ChatSession) => void
 }
 
-export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setOpened, setChatSession }: NvaBarProps, ref) => {
+export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
     const { classes: styles } = useStyles();
     const [chatSessions, setChatSessions] = useState<Array<ChatSession>>([]);
-
-    useImperativeHandle(ref, () => ({
-        loadSessions
-    }))
+    const { setRefreshSession, refreshMessages} = useSessionContext()
 
     useEffect(() => {
-        loadSessions().then()
+        refreshSession()
+        setRefreshSession(() => refreshSession)
     }, [])
 
     const loadSessions = async () => {
@@ -172,6 +171,20 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setOpene
             .then(sessions => {
                 setChatSessions(sessions)
             });
+    }
+
+    const refreshSession = () => {
+        loadSessions().then()
+    }
+
+    const setChatSession = (chatSession?: ChatSession) => {
+        if(!chatSession){
+            removeCookie(CHAT_SESSION_ID)
+        }
+        else if(getCookieByName(CHAT_SESSION_ID) !== chatSession.sessionId){
+            addCookie(CHAT_SESSION_ID, chatSession.sessionId)
+        }
+        refreshMessages?.()
     }
 
     const deleteSession = async (sessionId: string, event: any) => {
@@ -188,6 +201,10 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setOpene
             });
     }
 
+    const onChangeRoute = (route: string) => {
+        Router.push(route).then()
+    }
+
     const onSelectSession = (session: ChatSession) => {
         setChatSession(session)
         setOpened(!opened)
@@ -195,7 +212,7 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setOpene
 
     const mainLinks = links.map((link) => (
         <UnstyledButton key={link.label} className={styles.mainLink}>
-            <div className={styles.mainLinkInner}>
+            <div className={styles.mainLinkInner} onClick={() => onChangeRoute(link.route)}>
                 <link.icon size={20} className={styles.mainLinkIcon} stroke={1.5} />
                 <span>{link.label}</span>
             </div>
@@ -250,4 +267,4 @@ export const MainNavBar = forwardRef<NavBarRef, NvaBarProps>(({ opened, setOpene
             </Navbar.Section>
         </Navbar>
     );
-})
+}

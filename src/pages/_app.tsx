@@ -5,10 +5,13 @@ import Head from 'next/head';
 import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
 import {SessionProvider} from "next-auth/react";
 import {Notifications} from "@mantine/notifications";
+import {SessionContextProvider} from "@/components/providers/SessionContextProvider";
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
     const { Component, pageProps } = props;
     const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+    const [refreshSession, setRefreshSession] = useState<() => void>(() => {});
+    const [refreshMessage, setRefreshMessage] = useState<() => void>(() => {});
 
     const toggleColorScheme = (value?: ColorScheme) => {
         const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -26,10 +29,17 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 
             <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
                 <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-                    <Notifications />
-                    <SessionProvider session={pageProps.session}>
-                        <Component {...pageProps} />
-                    </SessionProvider>
+                    <SessionContextProvider
+                        refreshSession={refreshSession}
+                        setRefreshSession={setRefreshSession}
+                        refreshMessages={refreshMessage}
+                        setRefreshMessages={setRefreshMessage}
+                    >
+                        <Notifications />
+                        <SessionProvider session={pageProps.session}>
+                            <Component {...pageProps} />
+                        </SessionProvider>
+                    </SessionContextProvider>
                 </MantineProvider>
             </ColorSchemeProvider>
         </>
