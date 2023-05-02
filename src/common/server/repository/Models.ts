@@ -23,3 +23,14 @@ export interface UserUsageLimit {
     chatLimit: number,
     chatUsage: number,
 }
+
+export interface CodeSegment {
+    codeId: string,
+    userEmail: string,
+    title: string,
+    suffix: string,
+    language: string,
+    code: string,
+    version: string,
+    gitUrl: string,
+}

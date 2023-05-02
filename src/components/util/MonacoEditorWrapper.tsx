@@ -14,13 +14,19 @@ interface MonacoEditorWrapperProps {
     onChange: (value: string, event: any) => void;
     language?: string;
     theme?: string;
+    options?: {
+        showLineNumbers?: boolean,
+        selectOnLineNumbers?: boolean,
+        fontSize?: number,
+    }
+
 }
 
-const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({ code, onChange, language, theme }) => {
+export default function MonacoEditorWrapper({ code, onChange, language, theme, options }: MonacoEditorWrapperProps) {
     const handleEditorChange = (value: string, event: any) => {
         onChange(value, event);
     };
-
+    // options : https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneEditorConstructionOptions.html
     return (
         <MonacoEditor
             width="100%"
@@ -30,10 +36,10 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({ code, onChang
             value={code}
             onChange={handleEditorChange}
             options={{
+                lineNumbers: options?.showLineNumbers ? "on" : "off",
                 selectOnLineNumbers: true,
+                fontSize: options?.fontSize || 18,
             }}
         />
     );
 };
-
-export default MonacoEditorWrapper;

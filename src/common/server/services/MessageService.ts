@@ -8,7 +8,6 @@ import {userUsageLimitsService} from "@/common/server/services/UserUsageLimitSer
 
 
 class MessageService {
-
     getChatMessages = async (userEmail: string, sessionId: string): Promise<Array<ChatMessage>> => {
         return messages.getMessages(userEmail, sessionId).then<Array<ChatMessage>>((messageList: Array<Message>) => {
             return messageList.map((message: Message) => {
