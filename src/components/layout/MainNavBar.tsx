@@ -3,7 +3,6 @@ import {
     Code,
     createStyles,
     Group,
-    Image,
     Navbar,
     rem,
     Text,
@@ -17,6 +16,7 @@ import {CHAT_SESSION_ID, ChatSession} from "@/common/client/ChatGPTCommon";
 import {addCookie, getCookieByName, removeCookie} from "@/common/client/common";
 import {useSessionContext} from "@/components/providers/SessionContextProvider";
 import Router from 'next/router'
+import {NavbarSession} from "@/components/chat/NavbarSession";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -150,6 +150,12 @@ const toys = [
     { emoji: '🙈', label: 'Debts' },
     { emoji: '💁‍♀️', label: 'Customers' },
 ];
+
+export enum NavBarType {
+    CHAT,
+    COMPLETION
+}
+
 type NvaBarProps = {
     opened: boolean
     setOpened: (opened: boolean) => void
@@ -157,57 +163,19 @@ type NvaBarProps = {
 
 export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
     const { classes: styles } = useStyles();
-    const [chatSessions, setChatSessions] = useState<Array<ChatSession>>([]);
-    const { setRefreshSession, refreshMessages} = useSessionContext()
+    const [navBarType, setNavBarType] = useState<NavBarType>(NavBarType.CHAT)
 
     useEffect(() => {
-        refreshSession()
-        setRefreshSession(() => refreshSession)
+        const route = Router.route
+        if(route === '/chat' || route === '/'){
+            setNavBarType(NavBarType.CHAT)
+        } else if(route === '/completion'){
+            setNavBarType(NavBarType.COMPLETION)
+        }
     }, [])
-
-    const loadSessions = async () => {
-        return fetch("/api/chatgpt/session")
-            .then(response => response.json())
-            .then(sessions => {
-                setChatSessions(sessions)
-            });
-    }
-
-    const refreshSession = () => {
-        loadSessions().then()
-    }
-
-    const setChatSession = (chatSession?: ChatSession) => {
-        if(!chatSession){
-            removeCookie(CHAT_SESSION_ID)
-        }
-        else if(getCookieByName(CHAT_SESSION_ID) !== chatSession.sessionId){
-            addCookie(CHAT_SESSION_ID, chatSession.sessionId)
-        }
-        refreshMessages?.()
-    }
-
-    const deleteSession = async (sessionId: string, event: any) => {
-        event.stopPropagation()
-        return fetch('/api/chatgpt/session?'.concat(new URLSearchParams({ sessionId }).toString()), {
-            method: 'DELETE',
-        })
-            .then(response => response.json())
-            .then(sessions => {
-                setChatSessions(sessions)
-                if(getCookieByName(CHAT_SESSION_ID) === sessionId){
-                    setChatSession()
-                }
-            });
-    }
 
     const onChangeRoute = (route: string) => {
         Router.push(route).then()
-    }
-
-    const onSelectSession = (session: ChatSession) => {
-        setChatSession(session)
-        setOpened(!opened)
     }
 
     const mainLinks = links.map((link) => (
@@ -217,21 +185,6 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
                 <span>{link.label}</span>
             </div>
         </UnstyledButton>
-    ));
-
-    const collectionLinks = chatSessions.map((session) => (
-        <Group
-            position="apart"
-            key={session.sessionId}
-            className={styles.collection}
-            onClick={() => onSelectSession(session)}
-        >
-            <a className={styles.collectionLink}>
-                <span style={{ marginRight: rem(9), fontSize: rem(16) }}>✨</span>{' '}
-                {session.title}
-            </a>
-            <IconTrash size={16} stroke={1.5} onClick={(event) => deleteSession(session.sessionId, event)} className={styles.collectionIcon} />
-        </Group>
     ));
 
     return (
@@ -253,17 +206,9 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
             </Navbar.Section>
 
             <Navbar.Section className={styles.section}>
-                <Group className={styles.collectionsHeader} position="apart">
-                    <Text size="xs" weight={500} color="dimmed">
-                        Sessions
-                    </Text>
-                    <Tooltip label="Create new session" withArrow position="right">
-                        <ActionIcon variant="default" size={18} onClick={() => setChatSession()}>
-                            <IconPlus size="0.8rem" stroke={1.5} />
-                        </ActionIcon>
-                    </Tooltip>
-                </Group>
-                <div className={styles.collections}>{collectionLinks}</div>
+                {
+                    navBarType === NavBarType.CHAT ? (<NavbarSession opened={opened} setOpened={setOpened}/>) : null
+                }
             </Navbar.Section>
         </Navbar>
     );

@@ -13,12 +13,14 @@ interface GetMessageParams {
     model: string,
     message: ChatMessage,
     sessionId?: string,
-    historyMessage: Array<ChatMessage>
+    historyMessage: Array<ChatMessage>,
+    userEmail?: string
 }
 
 export async function POST(request: Request){
     const user: SessionUser = await getUserInfo()
     const params: GetMessageParams = await request.json()
+    params.userEmail = user.email
     params.historyMessage = []
     if(params.sessionId){
         params.historyMessage = await messageService.getChatMessages(user.email, params.sessionId)
@@ -32,11 +34,11 @@ export async function POST(request: Request){
     }
     if(!params.sessionId){
         params.sessionId = randomUUID()
-        sessionService.createSession(params.sessionId, params.message.content.slice(0, 12).concat("..."), user.email).then()
+        sessionService.createSession(params.sessionId, params.message.content.slice(0, 15).concat("..."), user.email).then()
     }
-    messageService.saveMessage(params.message, params.sessionId).then()
+    messageService.saveMessage(params.message, params.sessionId, params.model).then()
     const completion: AxiosResponse | null = await getOpenAIResponse(params)
-    const response = createWebReadableStreamResponse(completion?.data, params.sessionId)
+    const response = createWebReadableStreamResponse(completion?.data, params.sessionId, params.model)
     response.cookies.set(CHAT_SESSION_ID, params.sessionId)
 
     return response
@@ -52,11 +54,13 @@ const getOpenAIResponse = (params: GetMessageParams): Promise<AxiosResponse> | n
 }
 
 const chat = (params: GetMessageParams): Promise<AxiosResponse> => {
+    console.log(`chat with ${params.model}`)
     return OpenAiApi.createChatCompletion({
         model: params.model,
         messages: [...params.historyMessage, params.message],
         stream: true,
-        max_tokens: 2048
+        max_tokens: 2048,
+        user: params.userEmail
     }, { responseType: "stream" })
 }
 
@@ -70,5 +74,6 @@ const completion = (params: GetMessageParams): Promise<AxiosResponse> => {
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
+        user: params.userEmail
     },{ responseType: "stream" })
 }

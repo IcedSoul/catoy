@@ -1,6 +1,6 @@
 'use client';
 
-import {AuthenticationForm} from "@/components/functions/Authentication";
+import {AuthenticationForm} from "@/components/auth/Authentication";
 import {Box, Center} from "@mantine/core";
 
 export default function Page() {

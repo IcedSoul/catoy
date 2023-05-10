@@ -14,9 +14,9 @@ export async function POST(request: Request){
     const user: SessionUser = await getUserInfo()
     const params: GetMessageParams = await request.json()
     const historyMessages = params.sessionId ? await messageService.getChatMessages(user.email, params.sessionId) : []
-    messageService.saveMessage(params.message, params.sessionId).then()
+    messageService.saveMessage(params.message, params.sessionId, params.model).then()
     const res: AxiosResponse | null = await chat(params, historyMessages)
-    return createWebReadableStreamResponse(res?.data, params.sessionId)
+    return createWebReadableStreamResponse(res?.data, params.sessionId, params.model)
 }
 
 const chat = (params: GetMessageParams, historyMessages: Array<ChatMessage>): Promise<AxiosResponse> => {

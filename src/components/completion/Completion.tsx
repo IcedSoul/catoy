@@ -53,10 +53,7 @@ export const Completion = () => {
     const { colorScheme } = useMantineColorScheme()
     const [theme, setTheme] = useState<string>(supportedThemes[0]);
 
-    useEffect(() => {
-        setCode("console.log('Hello World!');")
-        console.log(code);
-    }, []);
+    useEffect(() => {}, []);
 
     const onCodeChange = (value: string, event: any) => {
         setCode(value);
@@ -75,13 +72,31 @@ export const Completion = () => {
             <Group position="apart" className={classes.toolBar}>
                 <Grid className={classes.tools}>
                     <Text>Languages: </Text>
-                    <Select data={supportedLanguages} defaultValue={supportedLanguages[0]} placeholder="Select language" onChange={(value) => setLanguage(value || supportedLanguages[0])} w="8rem"/>
+                    <Select
+                        data={supportedLanguages}
+                        defaultValue={supportedLanguages[0]}
+                        placeholder="Select language"
+                        onChange={(value) => setLanguage(value || supportedLanguages[0])}
+                        w="8rem"
+                        searchable/>
                     <Divider size="sm" orientation="vertical"/>
                     <Text>Theme: </Text>
-                    <Select data={supportedThemes} defaultValue={supportedThemes[0]} placeholder="Select theme" onChange={(value) => setTheme(value || supportedThemes[0])} w="6rem"/>
+                    <Select
+                        data={supportedThemes}
+                        defaultValue={supportedThemes[0]}
+                        placeholder="Select theme"
+                        onChange={(value) => setTheme(value || supportedThemes[0])}
+                        w="6rem"
+                        searchable/>
                     <Divider size="sm" orientation="vertical" />
                     <Text>Font size: </Text>
-                    <Select data={supportedFontSizes} defaultValue={supportedFontSizes[2]} placeholder="Font size" onChange={(value) => setFontSize(parseInt(value || supportedFontSizes[2]))} w="5rem"/>
+                    <Select
+                        data={supportedFontSizes}
+                        defaultValue={supportedFontSizes[2]}
+                        placeholder="Font size"
+                        onChange={(value) => setFontSize(parseInt(value || supportedFontSizes[2]))}
+                        w="5rem"
+                        searchable/>
                     <Divider size="sm" orientation="vertical" />
                     <Switch
                         labelPosition="left"

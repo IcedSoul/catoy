@@ -24,7 +24,10 @@ class UserUsageLimits {
     }
 
     async updateUserUsageLimit(userUsageLimit: UserUsageLimit): Promise<boolean> {
-        const updateUserUsageLimit = {$set: {chatUsage: userUsageLimit.chatUsage}}
+        const updateUserUsageLimit = {$set: {
+            chatUsage: userUsageLimit.chatUsage, dailyChatUsage: userUsageLimit.dailyChatUsage || 0, dailyChatLimit: userUsageLimit.dailyChatLimit,
+            gpt4Usage: userUsageLimit.gpt4Usage || 0, dailyGpt4Usage: userUsageLimit.dailyGpt4Usage, dailyGpt4Limit: userUsageLimit.dailyGpt4Limit || 0,
+        }}
         const query = {email: userUsageLimit.email}
         return this.userUsageLimitsCollection.updateOne(query, updateUserUsageLimit).then(() => true).catch(() => false)
     }

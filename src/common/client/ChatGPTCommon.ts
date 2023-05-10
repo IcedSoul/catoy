@@ -11,7 +11,8 @@ export interface SessionUser {
 
 export interface ChatMessage {
     role: MessageSource,
-    content: string
+    content: string,
+    model?: string,
 }
 
 export interface ChatGPTRef{

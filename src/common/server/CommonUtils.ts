@@ -17,14 +17,18 @@ export const OpenAiApi = new OpenAIApi(configuration)
 
 export const SupportModels = {
     completion: ['text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci', 'curie', 'babbage', 'ada'],
-    chat: ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']
+    chat: ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-4', 'gpt-4-0314']
 }
 
-export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage, sessionId?: string): NextResponse => {
+export const isGPT4 = (model: string): boolean => {
+    return model.includes("gpt-4")
+}
+
+export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage, sessionId?: string, model?: string): NextResponse => {
     let bufferMessage: string | null = null
     const chatMsg: ChatMessage = {
         role: MessageSource.ASSISTANT,
-        content: ''
+        content: '',
     }
     const readableStream = new ReadableStream({
         start(controller){
@@ -34,7 +38,7 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
                     lines?.map((line) => {
                         const message = line.replace(/^data: /, "");
                         if(message === '[DONE]'){
-                            messageService.saveMessage(chatMsg, sessionId).then()
+                            messageService.saveMessage(chatMsg, sessionId, model).then()
                             controller.close()
                         } else {
                             let res;
@@ -86,6 +90,12 @@ export enum AccountSource {
     GOOGLE = 'google',
     GITHUB = 'github',
     CREDENTIALS = 'credentials'
+}
+
+export const isSameDay = (date1: Date, date2: Date) => {
+    return date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
 }
 
 export const DEFAULT_AVATAR = '/avatars/default.png'

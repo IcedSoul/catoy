@@ -13,7 +13,7 @@ export async function POST(request: Request){
     const params: GetMessageParams = await request.json()
     // @todo add message to complete
     const res: AxiosResponse | null = await completion(params)
-    return createWebReadableStreamResponse(res?.data, params.sessionId)
+    return createWebReadableStreamResponse(res?.data, params.sessionId, params.model)
 }
 
 const completion = (params: GetMessageParams): Promise<AxiosResponse> => {

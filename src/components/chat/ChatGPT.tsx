@@ -160,12 +160,12 @@ export const ChatGPT = ({}: ChatGPTProps) => {
 
         refreshSession?.()
         setRefreshMessages(() => refreshMessages)
+        loadMessages().then()
     }, [])
 
     const refreshMessages = () => {
         loadMessages().then()
     }
-
 
     const loadMessages = async () => {
         const sessionId = getCookieByName(CHAT_SESSION_ID)
@@ -176,6 +176,10 @@ export const ChatGPT = ({}: ChatGPTProps) => {
         fetch("/api/chatgpt/message?".concat(new URLSearchParams({ sessionId }).toString()))
             .then<Array<ChatMessage>>(response => response.json()).then((messages) => {
             setMessages(messages)
+            if(messages && messages.length > 0){
+                const message = messages[0]
+                setCurrentModel(message?.model || null)
+            }
             setTimeout(() => scrollToBottom("smooth"), 100)
         })
     }
@@ -360,7 +364,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                     <Select
                         w="80%"
                         label="Model"
-                        value={currentModel}
+                        value={currentModel || modelLists?.[0]?.value}
                         data={modelLists || []}
                         size="sm"
                         onChange={onModelChanged}

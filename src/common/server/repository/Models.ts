@@ -8,7 +8,8 @@ export interface User extends SessionUser{
 
 export interface Message extends ChatMessage {
     sessionId: string | null,
-    userEmail: string
+    userEmail: string,
+    model?: string,
 }
 
 export interface Session {
@@ -22,6 +23,13 @@ export interface UserUsageLimit {
     email: string,
     chatLimit: number,
     chatUsage: number,
+    dailyChatUsage: number,
+    dailyChatLimit: number,
+    gpt4Limit: number,
+    gpt4Usage: number,
+    dailyGpt4Usage: number,
+    dailyGpt4Limit: number,
+    lastUpdate: Date,
 }
 
 export interface CodeSegment {

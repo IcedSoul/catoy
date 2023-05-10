@@ -20,17 +20,18 @@ class MessageService {
         })
     }
 
-    saveMessage = async (chatMessage: ChatMessage, sessionId?: string) => {
+    saveMessage = async (chatMessage: ChatMessage, sessionId?: string, model?: string) => {
         const session = await getServerSession(authOptions)
         if(!session || !session.user || !session.user.email) {
             return redirect('/auth/login')
         }
-        userUsageLimitsService.increaseChatUsage(session.user.email)
+        userUsageLimitsService.increaseChatUsage(session.user.email, model || "")
         const message: Message = {
             sessionId: sessionId || null,
             userEmail: session.user.email,
             role: chatMessage.role,
             content: chatMessage.content,
+            model: model || ""
         }
         messages.addMessage(message).then()
     }

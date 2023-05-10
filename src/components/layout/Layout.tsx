@@ -3,7 +3,7 @@ import {
     useMantineTheme,
 } from '@mantine/core';
 import {MainNavBar} from "./MainNavBar";
-import {ChatGPT} from "../functions/ChatGPT";
+import {ChatGPT} from "../chat/ChatGPT";
 import React, {useRef, useState} from "react";
 import MainHeader from "@/components/layout/MainHeader";
 import {CHAT_SESSION_ID, ChatGPTRef, ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
