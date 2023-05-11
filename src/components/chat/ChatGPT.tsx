@@ -377,7 +377,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                     spacing="lg"
                     className={classes.chatArea}
                 >
-                    <ScrollArea.Autosize h="100%" w="100%" viewportRef={scroll}>
+                    <ScrollArea.Autosize h="100%" w="100%" viewportRef={scroll} scrollHideDelay={0}>
                         <Stack justify="flex-end" align="self-start" w="100%" h="100%">
                                 {messageContents}
                         </Stack>

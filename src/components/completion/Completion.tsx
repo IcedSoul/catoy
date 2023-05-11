@@ -53,7 +53,9 @@ export const Completion = () => {
     const { colorScheme } = useMantineColorScheme()
     const [theme, setTheme] = useState<string>(supportedThemes[0]);
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        setCode("Not available yet.")
+    }, []);
 
     const onCodeChange = (value: string, event: any) => {
         setCode(value);

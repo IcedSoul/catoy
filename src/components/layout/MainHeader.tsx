@@ -59,9 +59,6 @@ const useStyles = createStyles((theme) => ({
     userActive: {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
     },
-
-
-
 }));
 
 type Props = {
@@ -126,27 +123,27 @@ export default function MainHeader({ opened, setOpened }: Props){
                                         </UnstyledButton>
                                     </Menu.Target>
                                     <Menu.Dropdown>
-                                        <Menu.Item
-                                            icon={<IconHeart size="0.9rem" color={theme.colors.red[6]} stroke={1.5} />}
-                                        >
-                                            Liked posts
-                                        </Menu.Item>
-                                        <Menu.Item
-                                            icon={<IconStar size="0.9rem" color={theme.colors.yellow[6]} stroke={1.5} />}
-                                        >
-                                            Saved posts
-                                        </Menu.Item>
-                                        <Menu.Item
-                                            icon={<IconMessage size="0.9rem" color={theme.colors.blue[6]} stroke={1.5} />}
-                                        >
-                                            Your comments
-                                        </Menu.Item>
+                                        {/*<Menu.Item*/}
+                                        {/*    icon={<IconHeart size="0.9rem" color={theme.colors.red[6]} stroke={1.5} />}*/}
+                                        {/*>*/}
+                                        {/*    Liked posts*/}
+                                        {/*</Menu.Item>*/}
+                                        {/*<Menu.Item*/}
+                                        {/*    icon={<IconStar size="0.9rem" color={theme.colors.yellow[6]} stroke={1.5} />}*/}
+                                        {/*>*/}
+                                        {/*    Saved posts*/}
+                                        {/*</Menu.Item>*/}
+                                        {/*<Menu.Item*/}
+                                        {/*    icon={<IconMessage size="0.9rem" color={theme.colors.blue[6]} stroke={1.5} />}*/}
+                                        {/*>*/}
+                                        {/*    Your comments*/}
+                                        {/*</Menu.Item>*/}
 
-                                        <Menu.Label>Settings</Menu.Label>
-                                        <Menu.Item icon={<IconSettings size="0.9rem" stroke={1.5} />}>
-                                            Account settings
-                                        </Menu.Item>
-                                        <Menu.Item icon={<IconSwitchHorizontal size="0.9rem" stroke={1.5} />}>
+                                        {/*<Menu.Label>Settings</Menu.Label>*/}
+                                        {/*<Menu.Item icon={<IconSettings size="0.9rem" stroke={1.5} />}>*/}
+                                        {/*    Account settings*/}
+                                        {/*</Menu.Item>*/}
+                                        <Menu.Item onClick={() => signOut()} icon={<IconSwitchHorizontal size="0.9rem" stroke={1.5} />}>
                                             Change account
                                         </Menu.Item>
                                         <Menu.Item onClick={() => signOut()} icon={<IconLogout size="0.9rem" stroke={1.5} />}>
@@ -155,7 +152,7 @@ export default function MainHeader({ opened, setOpened }: Props){
                                     </Menu.Dropdown>
                                 </Menu>
                             ) : (
-                                <Button onClick={() => signIn()} variant="outline" color="dark" radius="lg">Login</Button>
+                                <Button onClick={() => signIn()} variant="outline" color={colorScheme === "dark" ? "gray": "dark"} radius="lg">Login</Button>
                             )
                         }
                     </Group>

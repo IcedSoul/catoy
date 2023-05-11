@@ -4,7 +4,7 @@ import {
     createStyles,
     Group,
     Navbar,
-    rem,
+    rem, ScrollArea,
     Text,
     TextInput,
     Tooltip,
@@ -88,49 +88,6 @@ const useStyles = createStyles((theme) => ({
         height: rem(20),
         pointerEvents: 'none',
     },
-
-    collections: {
-        paddingLeft: `calc(${theme.spacing.md} - ${rem(6)})`,
-        paddingRight: `calc(${theme.spacing.md} - ${rem(6)})`,
-        paddingBottom: theme.spacing.md,
-    },
-
-    collectionsHeader: {
-        paddingLeft: `calc(${theme.spacing.md} + ${rem(2)})`,
-        paddingRight: theme.spacing.md,
-        marginBottom: rem(5),
-    },
-
-    collection: {
-        width: '100%',
-        padding: `${rem(8)} ${theme.spacing.xs}`,
-        textDecoration: 'none',
-        borderRadius: theme.radius.sm,
-        fontSize: theme.fontSizes.xs,
-        color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
-        lineHeight: 1,
-        fontWeight: 500,
-
-        '&:hover': {
-            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-            color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-            cursor: 'pointer',
-        },
-    },
-
-    collectionLink: {
-      flexGrow: 1,
-    },
-
-    collectionIcon: {
-        color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
-        flexGrow: 0,
-
-        '&:hover': {
-            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
-            color: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[8],
-        }
-    },
 }));
 
 const links = [
@@ -204,12 +161,9 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
             <Navbar.Section className={styles.section}>
                 <div className={styles.mainLinks}>{mainLinks}</div>
             </Navbar.Section>
-
-            <Navbar.Section className={styles.section}>
-                {
-                    navBarType === NavBarType.CHAT ? (<NavbarSession opened={opened} setOpened={setOpened}/>) : null
-                }
-            </Navbar.Section>
+            {
+                navBarType === NavBarType.CHAT ? (<NavbarSession opened={opened} setOpened={setOpened}/>) : null
+            }
         </Navbar>
     );
 }

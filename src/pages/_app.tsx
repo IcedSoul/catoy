@@ -6,6 +6,7 @@ import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core
 import {SessionProvider} from "next-auth/react";
 import {Notifications} from "@mantine/notifications";
 import {SessionContextProvider} from "@/components/providers/SessionContextProvider";
+import Script from "next/script";
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
     const { Component, pageProps } = props;
@@ -26,6 +27,17 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
                 <link rel="shortcut icon" href="/favicon.svg" />
             </Head>
+            <Script strategy="lazyOnload" src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`} />
+            <Script strategy="lazyOnload" id="gtag">
+                {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
+                    page_path: window.location.pathname,
+                    });
+                `}
+            </Script>
 
             <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
                 <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>

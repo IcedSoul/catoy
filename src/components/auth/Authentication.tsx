@@ -60,7 +60,7 @@ export function AuthenticationForm(props: PaperProps) {
                         message: "Enjoy your time here!",
                         color: 'green'
                     })
-                    router.push('/').then()
+                    router.push('/chat').then()
                 } else {
                     notifications.show({
                         title: 'Login failed',
@@ -72,7 +72,7 @@ export function AuthenticationForm(props: PaperProps) {
     };
 
     if(session){
-        router.push('/').then()
+        router.push('/chat').then()
     }
 
     return (

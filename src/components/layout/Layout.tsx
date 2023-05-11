@@ -3,13 +3,8 @@ import {
     useMantineTheme,
 } from '@mantine/core';
 import {MainNavBar} from "./MainNavBar";
-import {ChatGPT} from "../chat/ChatGPT";
-import React, {useRef, useState} from "react";
+import React, {useState} from "react";
 import MainHeader from "@/components/layout/MainHeader";
-import {CHAT_SESSION_ID, ChatGPTRef, ChatSession, NavBarRef} from "@/common/client/ChatGPTCommon";
-import {addCookie, getCookieByName} from "@/common/client/common";
-import {deleteCookie} from "cookies-next";
-
 interface LayoutProps {
     children: React.ReactNode;
 }

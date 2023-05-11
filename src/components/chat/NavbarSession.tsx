@@ -1,4 +1,4 @@
-import {ActionIcon, createStyles, Group, Navbar, rem, Text, Tooltip} from "@mantine/core";
+import {ActionIcon, createStyles, Group, Navbar, rem, ScrollArea, Text, Tooltip} from "@mantine/core";
 import {IconPlus, IconTrash} from "@tabler/icons-react";
 import {addCookie, getCookieByName, removeCookie} from "@/common/client/common";
 import {CHAT_SESSION_ID, ChatSession} from "@/common/client/ChatGPTCommon";
@@ -6,6 +6,11 @@ import {useEffect, useState} from "react";
 import {useSessionContext} from "@/components/providers/SessionContextProvider";
 
 const useStyles = createStyles((theme) => ({
+    section: {
+        marginLeft: `calc(${theme.spacing.md} * -1)`,
+        marginRight: `calc(${theme.spacing.md} * -1)`,
+    },
+
     collections: {
         paddingLeft: `calc(${theme.spacing.md} - ${rem(6)})`,
         paddingRight: `calc(${theme.spacing.md} - ${rem(6)})`,
@@ -122,18 +127,22 @@ export const NavbarSession = ({opened, setOpened}: NavbarSessionProps) => {
     ));
 
     return (
-        <div>
-            <Group className={classes.collectionsHeader} position="apart">
-                <Text size="xs" weight={500} color="dimmed">
-                    Sessions
-                </Text>
-                <Tooltip label="Create new session" withArrow position="right">
-                    <ActionIcon variant="default" size={18} onClick={() => setChatSession()}>
-                        <IconPlus size="0.8rem" stroke={1.5} />
-                    </ActionIcon>
-                </Tooltip>
-            </Group>
-            <div className={classes.collections}>{collectionLinks}</div>
-        </div>
+        <>
+            <Navbar.Section className={classes.section}>
+                <Group className={classes.collectionsHeader} position="apart">
+                    <Text size="xs" weight={500} color="dimmed">
+                        Sessions
+                    </Text>
+                    <Tooltip label="Create new session" withArrow position="right">
+                        <ActionIcon variant="default" size={18} onClick={() => setChatSession()}>
+                            <IconPlus size="0.8rem" stroke={1.5} />
+                        </ActionIcon>
+                    </Tooltip>
+                </Group>
+            </Navbar.Section>
+            <Navbar.Section grow component={ScrollArea} className={classes.section} scrollHideDelay={0}>
+                <div className={classes.collections}>{collectionLinks}</div>
+            </Navbar.Section>
+        </>
     )
 }
