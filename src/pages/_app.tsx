@@ -5,14 +5,18 @@ import Head from 'next/head';
 import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
 import {SessionProvider} from "next-auth/react";
 import {Notifications} from "@mantine/notifications";
-import {SessionContextProvider} from "@/components/providers/SessionContextProvider";
+import {GlobalContextProvider} from "@/components/providers/GlobalContextProvider";
 import Script from "next/script";
+import {CodeProps, FileProps, InsertCodeProps} from "@/common/client/CompleteCommon";
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
     const { Component, pageProps } = props;
     const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
     const [refreshSession, setRefreshSession] = useState<() => void>(() => {});
     const [refreshMessage, setRefreshMessage] = useState<() => void>(() => {});
+    const [refreshCode, setRefreshCode] = useState<(codeProps: CodeProps) => void>(() => {});
+    const [refreshFile, setRefreshFile] = useState<(fileProps: FileProps) => void>(() => {});
+    const [refreshInsertCode, setRefreshInsertCode] = useState<(insertCodeProps: InsertCodeProps) => void>(() => {});
 
     const toggleColorScheme = (value?: ColorScheme) => {
         const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -41,17 +45,23 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 
             <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
                 <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-                    <SessionContextProvider
+                    <GlobalContextProvider
                         refreshSession={refreshSession}
                         setRefreshSession={setRefreshSession}
                         refreshMessages={refreshMessage}
                         setRefreshMessages={setRefreshMessage}
+                        refreshCode={refreshCode}
+                        setRefreshCode={setRefreshCode}
+                        refreshFile={refreshFile}
+                        setRefreshFile={setRefreshFile}
+                        refreshInsertCode={refreshInsertCode}
+                        setRefreshInsertCode={setRefreshInsertCode}
                     >
                         <Notifications />
                         <SessionProvider session={pageProps.session}>
                             <Component {...pageProps} />
                         </SessionProvider>
-                    </SessionContextProvider>
+                    </GlobalContextProvider>
                 </MantineProvider>
             </ColorSchemeProvider>
         </>

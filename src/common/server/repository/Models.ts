@@ -42,3 +42,11 @@ export interface CodeSegment {
     version: string,
     gitUrl: string,
 }
+
+export interface FileTreeData {
+    id: string,
+    userEmail: string,
+    classification: "doc" | "code",
+    name: string,
+    content: string,
+}

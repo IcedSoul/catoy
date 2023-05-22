@@ -16,7 +16,7 @@ import {
     ThemeIcon, useMantineColorScheme
 } from '@mantine/core';
 
-import {IconBrandOpenai, IconBrandTelegram, IconCursorText, IconUfo} from "@tabler/icons-react";
+import {IconBrandOpenai, IconBrandTelegram, IconUfo} from "@tabler/icons-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 import './markdown-styles.css'
@@ -33,7 +33,7 @@ import {
     MessageSource
 } from "@/common/client/ChatGPTCommon";
 import {getCookieByName, removeCookie} from "@/common/client/common";
-import {useSessionContext} from "@/components/providers/SessionContextProvider";
+import {useGlobalContext} from "@/components/providers/GlobalContextProvider";
 import {notifications} from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
@@ -140,7 +140,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
     const scroll = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { colorScheme } = useMantineColorScheme();
-    const { refreshSession, setRefreshMessages } = useSessionContext()
+    const { refreshSession, setRefreshMessages } = useGlobalContext()
 
     useEffect(() => {
         const getModels = async () => {

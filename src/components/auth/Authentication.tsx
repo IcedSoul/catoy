@@ -25,6 +25,9 @@ interface UserValues {
     terms: boolean;
 }
 
+const signInParams = {
+    callbackUrl: "/chat",
+}
 
 export function AuthenticationForm(props: PaperProps) {
     const router = useRouter();
@@ -82,8 +85,8 @@ export function AuthenticationForm(props: PaperProps) {
             </Text>
 
             <Group grow mb="md" mt="md">
-                <GoogleButton radius="xl" onClick={() => signIn("google")}>Google</GoogleButton>
-                <GithubButton radius="xl" onClick={() => signIn("github")}>Github</GithubButton>
+                <GoogleButton radius="xl" onClick={() => signIn("google", signInParams)}>Google</GoogleButton>
+                <GithubButton radius="xl" onClick={() => signIn("github", signInParams)}>Github</GithubButton>
             </Group>
 
             <Divider label="Or continue with email" labelPosition="center" my="lg" />

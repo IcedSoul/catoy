@@ -9,9 +9,11 @@
 6. add copy code button.
 7. ~~tuning session item & delete button click experience.~~
 8. ~~fix code area responsive width issue.~~
+9. allow multiple lines chat message.
+10. auto generate code or generate code by key press.
 
 ## Features
 1. add text completion feature.
 2. add image generate feature.
-3. add code generate feature.
+3. ~~add code generate feature.~~
 4. add scenario applications base on openai apis.

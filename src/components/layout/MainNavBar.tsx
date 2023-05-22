@@ -1,22 +1,16 @@
 import {
-    ActionIcon,
     Code,
     createStyles,
-    Group,
     Navbar,
-    rem, ScrollArea,
-    Text,
+    rem,
     TextInput,
-    Tooltip,
     UnstyledButton
 } from "@mantine/core";
-import {IconBrandHipchat, IconBrandVscode, IconPlus, IconSearch, IconTrash} from "@tabler/icons-react";
+import {IconBrandHipchat, IconBrandVscode, IconSearch} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
-import {CHAT_SESSION_ID, ChatSession} from "@/common/client/ChatGPTCommon";
-import {addCookie, getCookieByName, removeCookie} from "@/common/client/common";
-import {useSessionContext} from "@/components/providers/SessionContextProvider";
 import Router from 'next/router'
 import {NavbarSession} from "@/components/chat/NavbarSession";
+import {NavbarCode} from "@/components/completion/NavbarCode";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -109,6 +103,7 @@ const toys = [
 ];
 
 export enum NavBarType {
+    NONE,
     CHAT,
     COMPLETION
 }
@@ -120,7 +115,7 @@ type NvaBarProps = {
 
 export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
     const { classes: styles } = useStyles();
-    const [navBarType, setNavBarType] = useState<NavBarType>(NavBarType.CHAT)
+    const [navBarType, setNavBarType] = useState<NavBarType>(NavBarType.NONE)
 
     useEffect(() => {
         const route = Router.route
@@ -162,7 +157,8 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
                 <div className={styles.mainLinks}>{mainLinks}</div>
             </Navbar.Section>
             {
-                navBarType === NavBarType.CHAT ? (<NavbarSession opened={opened} setOpened={setOpened}/>) : null
+                navBarType === NavBarType.CHAT ? (<NavbarSession opened={opened} setOpened={setOpened}/>) :
+                    navBarType === NavBarType.COMPLETION ? (<NavbarCode opened={opened} setOpened={setOpened}/>): null
             }
         </Navbar>
     );

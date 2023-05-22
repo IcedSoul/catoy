@@ -38,7 +38,7 @@ export const createWebReadableStreamResponse = (incomingMessage: IncomingMessage
                     lines?.map((line) => {
                         const message = line.replace(/^data: /, "");
                         if(message === '[DONE]'){
-                            messageService.saveMessage(chatMsg, sessionId, model).then()
+                            sessionId && messageService.saveMessage(chatMsg, sessionId, model).then()
                             controller.close()
                         } else {
                             let res;
@@ -96,6 +96,30 @@ export const isSameDay = (date1: Date, date2: Date) => {
     return date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth() &&
         date1.getDate() === date2.getDate();
+}
+
+/**
+ * Split code into two parts: before and after the cursor
+ * @param code - the code to split
+ * @param position - the position of the cursor
+ */
+export const splitCode = (code: string, position: {lineNumber: number, column: number}): {prompt: string, suffix: string} => {
+    const lines = code.split('\n');
+    const line = position.lineNumber - 1;
+    const column = position.column - 1;
+    if (line >= 0 && line < lines.length) {
+        const beforeLine = lines.slice(0, line).join('\n');
+        const currentLine = lines[line];
+        const beforeColumn = currentLine.slice(0, column);
+        const afterColumn = currentLine.slice(column);
+        const afterLine = lines.slice(line + 1).join('\n');
+
+        const firstString = beforeLine + (beforeColumn ? '\n' + beforeColumn : '');
+        const secondString = afterColumn + (afterLine ? '\n' + afterLine : '');
+
+        return {prompt: firstString, suffix: secondString};
+    }
+    return {prompt: code, suffix: ''};
 }
 
 export const DEFAULT_AVATAR = '/avatars/default.png'

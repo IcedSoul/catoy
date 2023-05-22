@@ -15,8 +15,8 @@ import {
 import React, {useState} from "react";
 import MainHeader from "@/components/layout/MainHeader";
 import {IconCheck} from "@tabler/icons-react";
-import {signIn} from "next-auth/react";
-import Router from "next/router";
+import {signIn, useSession} from "next-auth/react";
+import Router, {useRouter} from "next/router";
 
 const useStyles = createStyles((theme) => ({
     inner: {
@@ -71,15 +71,20 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export const HomeIndex = () => {
+    const router = useRouter();
     const theme = useMantineTheme();
     const { colorScheme } = useMantineColorScheme();
     const { classes } = useStyles();
     const [opened, setOpened] = useState(false);
+    const { data: session } = useSession()
 
     const toChat = () => {
-        Router.push('/chat');
+        router.push('/chat').then();
     }
 
+    if(session){
+        router.push('/chat').then()
+    }
 
     return (
         <AppShell

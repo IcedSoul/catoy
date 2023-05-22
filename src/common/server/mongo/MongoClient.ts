@@ -9,6 +9,7 @@ export const mongoDbInfo = {
         Session: 'session',
         UserUsageLimits: 'userUsageLimits',
         CodeSegment: 'codeSegment',
+        FileTreeData: 'fileTreeData',
     }
 }
 

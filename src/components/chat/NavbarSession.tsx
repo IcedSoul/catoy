@@ -3,7 +3,7 @@ import {IconPlus, IconTrash} from "@tabler/icons-react";
 import {addCookie, getCookieByName, removeCookie} from "@/common/client/common";
 import {CHAT_SESSION_ID, ChatSession} from "@/common/client/ChatGPTCommon";
 import {useEffect, useState} from "react";
-import {useSessionContext} from "@/components/providers/SessionContextProvider";
+import {useGlobalContext} from "@/components/providers/GlobalContextProvider";
 
 const useStyles = createStyles((theme) => ({
     section: {
@@ -63,7 +63,7 @@ interface NavbarSessionProps {
 export const NavbarSession = ({opened, setOpened}: NavbarSessionProps) => {
     const { classes } = useStyles();
     const [chatSessions, setChatSessions] = useState<Array<ChatSession>>([]);
-    const { setRefreshSession, refreshMessages} = useSessionContext()
+    const { setRefreshSession, refreshMessages} = useGlobalContext()
 
     useEffect(() => {
         refreshSession()

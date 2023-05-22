@@ -29,7 +29,7 @@ class CodeSegments{
     }
 
     async updateCodeSegment(codeSegment: CodeSegment): Promise<boolean> {
-        const updateCodeSegment = {$set: {code: codeSegment.code}}
+        const updateCodeSegment = {$set: {title: codeSegment.title, suffix: codeSegment.suffix, language: codeSegment.language, code: codeSegment.code}}
         const query = {userEmail: codeSegment.userEmail, codeId: codeSegment.codeId}
         return this.codeSegmentsCollection.updateOne(query, updateCodeSegment).then(() => true).catch(() => false)
     }

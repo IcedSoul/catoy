@@ -13,10 +13,9 @@ import {
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {
     IconChevronDown,
-    IconHeart, IconLogout,
-    IconMessage, IconMoonStars,
-    IconSettings,
-    IconStar, IconSun,
+    IconLogout,
+    IconMoonStars,
+    IconSun,
     IconSwitchHorizontal,
 } from "@tabler/icons-react";
 import {signIn, signOut, useSession} from "next-auth/react";
@@ -60,6 +59,10 @@ const useStyles = createStyles((theme) => ({
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
     },
 }));
+
+const signOutParams = {
+    callbackUrl: "/auth/login",
+}
 
 type Props = {
     opened: boolean
@@ -143,10 +146,10 @@ export default function MainHeader({ opened, setOpened }: Props){
                                         {/*<Menu.Item icon={<IconSettings size="0.9rem" stroke={1.5} />}>*/}
                                         {/*    Account settings*/}
                                         {/*</Menu.Item>*/}
-                                        <Menu.Item onClick={() => signOut()} icon={<IconSwitchHorizontal size="0.9rem" stroke={1.5} />}>
+                                        <Menu.Item onClick={() => signOut(signOutParams)} icon={<IconSwitchHorizontal size="0.9rem" stroke={1.5} />}>
                                             Change account
                                         </Menu.Item>
-                                        <Menu.Item onClick={() => signOut()} icon={<IconLogout size="0.9rem" stroke={1.5} />}>
+                                        <Menu.Item onClick={() => signOut(signOutParams)} icon={<IconLogout size="0.9rem" stroke={1.5} />}>
                                             Logout
                                         </Menu.Item>
                                     </Menu.Dropdown>
