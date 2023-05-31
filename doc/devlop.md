@@ -11,6 +11,8 @@
 8. ~~fix code area responsive width issue.~~
 9. allow multiple lines chat message.
 10. auto generate code or generate code by key press.
+11. tuning code insert experience.
+12. tuning code auto save logic, reduce save times.
 
 ## Features
 1. add text completion feature.

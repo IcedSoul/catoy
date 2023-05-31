@@ -97,7 +97,7 @@ export interface InsertCodeProps {
         lineNumber: number,
         column: number,
     }
-    source: string,
+    source?: string,
     end: boolean,
     editor?: any,
     monaco?: any,
@@ -165,7 +165,7 @@ export const calculateNewPosition = (code: string, position: {lineNumber: number
         }
     }
     return {
-        lineNumber: position.lineNumber + lines.length - 1,
+        lineNumber: position.lineNumber + lines.length - (lines[lines.length - 1].length === 0 ? 0 : 1),
         column: lines[lines.length - 1].length + 1,
     }
 }

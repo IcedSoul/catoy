@@ -101,6 +101,7 @@
 .markdown-body pre {
   padding: 5px;
   display: grid;
+  color: #74C0FC;
 }
 
 @media (max-width: 767px) {

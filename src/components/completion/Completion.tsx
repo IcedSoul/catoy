@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState} from "react";
 import {
     Button, Center,
     Container,
@@ -76,6 +76,7 @@ export const Completion = () => {
     const [currentCode, setCurrentCode] = useState<CodeSegment | null>(null);
     const [currentCodeProps, setCurrentCodeProps] = useState<CodeProps | null>(null);
     const [cursorPosition, setCursorPosition] = useState<{lineNumber: number, column: number}>({lineNumber: 1, column: 1})
+    // const [silence, setSilence] = useState<boolean>(false)
     const {setRefreshCode, refreshFile, refreshInsertCode} = useGlobalContext()
     const { data: session } = useSession()
     const { user } = session || { user: null }
@@ -147,14 +148,17 @@ export const Completion = () => {
             headers,
             body: JSON.stringify(code)
         }
-        fetch('/api/completion/code', requestInit).then((response) => response.json()).then(refreshCode).catch((error) => {
+        fetch('/api/completion/code', requestInit).then((response) => response.json()).then(() => {
+            // update success
+            // setSilence(false)
+        }).catch((error) => {
             notifications.show({message: JSON.stringify(error), color: 'red'})
         })
     }
 
     const onCodeChange = (value: string, event: any) => {
         setCode(value);
-        if(currentCode) {
+        if(currentCode && currentCode.code !== value) {
             currentCode.code = value;
             updateCode(currentCode)
         }
@@ -172,7 +176,6 @@ export const Completion = () => {
     }
 
     const completeCode = async () => {
-        console.log('complete code, position: ', cursorPosition)
         if(!currentCode) {
             return
         }
@@ -210,8 +213,8 @@ export const Completion = () => {
                 })
                 break
             }
-            const code: string = decoder.decode(value)
-            responseStr = responseStr.concat(code)
+            const codeIncrement: string = decoder.decode(value)
+            responseStr = responseStr.concat(codeIncrement)
             endPosition = calculateNewPosition(responseStr, cursorPosition)
             refreshInsertCode && refreshInsertCode({
                 code: responseStr,
@@ -223,7 +226,6 @@ export const Completion = () => {
                 source: 'completion',
                 end: false
             })
-
             lastPosition = endPosition
         }
     }

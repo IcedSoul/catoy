@@ -6,7 +6,7 @@ import {
     TextInput,
     UnstyledButton
 } from "@mantine/core";
-import {IconBrandHipchat, IconBrandVscode, IconSearch} from "@tabler/icons-react";
+import {IconBrandHipchat, IconBrandVscode, IconNote, IconSearch} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import Router from 'next/router'
 import {NavbarSession} from "@/components/chat/NavbarSession";
@@ -87,7 +87,7 @@ const useStyles = createStyles((theme) => ({
 const links = [
     { icon: IconBrandHipchat, label: 'ChatGPT', route: '/chat' },
     { icon: IconBrandVscode, label: 'Completion', route: '/completion' },
-    // { icon: IconUser, label: 'Contacts' },
+    { icon: IconNote, label: 'Note', route: '/note' },
 ];
 
 const toys = [

@@ -137,6 +137,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
     const [messages, setMessages] = useState<Array<ChatMessage>>([])
     const [modelLists, setModelLists] = useState<Array<SelectItem>>([])
     const [currentLoadingMessage, setCurrentLoadingMessage] = useState<ChatMessage>();
+    const [inputMessage, setInputMessage] = useState<string>("");
     const scroll = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { colorScheme } = useMantineColorScheme();
@@ -165,6 +166,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
 
     const refreshMessages = () => {
         loadMessages().then()
+        setInputMessage("")
     }
 
     const loadMessages = async () => {
@@ -229,15 +231,22 @@ export const ChatGPT = ({}: ChatGPTProps) => {
         }
     }
 
+    const onTextAreaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setInputMessage(event.target.value)
+    }
+
     const onTextAreaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if(event.key === 'Enter'){
+        if(event.key === 'Enter' && (event.shiftKey || event.ctrlKey)){
+            event.preventDefault()
+            setInputMessage(inputMessage.concat('\n'))
+        } else if(event.key === 'Enter'){
             event.preventDefault()
             onSendMessage()
         }
     }
 
     const onSendMessage = () => {
-        const message = messageTextArea.current?.value
+        const message = inputMessage.trim()
         if(!message) { return }
         messageTextArea.current ? messageTextArea.current.value = '' : null
         const sendChatMessage: ChatMessage = {
@@ -262,6 +271,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
 
     const scrollToBottom = (behavior: ScrollBehavior = 'auto') =>
         scroll.current?.scrollTo({ top: scroll.current?.scrollHeight, behavior });
+
 
     const messageContents = [...messages, currentLoadingMessage].filter(message => message).map((message, key) => (
         <Paper
@@ -396,6 +406,8 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                             autosize
                             minRows={1}
                             maxRows={10}
+                            value={inputMessage}
+                            onChange={onTextAreaChange}
                             onKeyDown={onTextAreaKeyDown}
                         />
                     </Grid.Col>

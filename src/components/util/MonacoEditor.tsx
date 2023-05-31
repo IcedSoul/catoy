@@ -32,10 +32,20 @@ export const MonacoEditor = ({ code, onChange, language, theme, options, onPosit
         editorRef.current = editor;
         onPositionChange && editor.onDidChangeCursorPosition(onPositionChange)
         setRefreshInsertCode && setRefreshInsertCode(() => insertCode)
+        editor.addAction({
+            id: 'insert-code',
+            label: 'Insert Code',
+            keybindings: [
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.Tab,
+            ],
+            contextMenuGroupId: 'navigation',
+            run: () => {
+                console.log('insert code')
+            }
+        })
     }
 
     const insertCode = (code: InsertCodeProps) => {
-        console.log("insertCode", code)
         const editor = code.editor || editorRef.current;
         const currentPos = code.lastPosition || editor?.getPosition();
         editor.setPosition(currentPos)
