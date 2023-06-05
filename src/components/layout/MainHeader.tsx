@@ -1,17 +1,19 @@
 import {
     ActionIcon,
     Avatar,
-    Burger, Button, Container,
+    Burger, Button, Center, Container,
     createStyles,
     Group,
     Header,
-    Menu,
+    Menu, Modal,
     rem,
     Text,
+    Title,
     UnstyledButton, useMantineColorScheme,
 } from "@mantine/core";
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {
+    IconChartPie2,
     IconChevronDown,
     IconLogout,
     IconMoonStars,
@@ -20,6 +22,8 @@ import {
 } from "@tabler/icons-react";
 import {signIn, signOut, useSession} from "next-auth/react";
 import CatoyLogo from "@/components/parts/CatoyLogo";
+import StatusBar from "@/components/parts/StatusBar";
+import {UserUsageLimit} from "@/common/server/repository/Models";
 const useStyles = createStyles((theme) => ({
     header: {
         paddingTop: theme.spacing.sm,
@@ -58,6 +62,11 @@ const useStyles = createStyles((theme) => ({
     userActive: {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
     },
+
+    usageModalTitle: {
+        marginTop: theme.spacing.lg,
+        marginBottom: theme.spacing.sm,
+    }
 }));
 
 const signOutParams = {
@@ -69,12 +78,66 @@ type Props = {
     setOpened: Dispatch<SetStateAction<boolean>>
 }
 
+type UserUsageInfo = {
+    title: string
+    limit: number
+    usage: number
+    type: "daily" | "total"
+}
+
 export default function MainHeader({ opened, setOpened }: Props){
     const {classes, theme, cx } = useStyles();
     const [userMenuOpened, setUserMenuOpened] = useState(false);
+    const [usageModalOpened, setUsageModalOpened] = useState(false);
+    const [gpt35UsageInfo, setGpt35UsageInfo] = useState<UserUsageInfo | null>(null)
+    const [gpt4UsageInfo, setGpt4UsageInfo] = useState<UserUsageInfo | null>(null)
+    const [gpt35TotalUsageInfo, setGpt35TotalUsageInfo] = useState<UserUsageInfo | null>(null)
+    const [gpt4TotalUsageInfo, setGpt4TotalUsageInfo] = useState<UserUsageInfo | null>(null)
     const { data: session } = useSession()
     const { user } = session || { user: null }
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+
+    const onUsageClick = () => {
+        getUsageInfo()
+        setUsageModalOpened(true)
+    }
+
+    const onUsageClose = () => {
+        setUsageModalOpened(false)
+    }
+
+    const getUsageInfo = () => {
+        fetch('/api/user/usage', {
+            method: 'GET',
+        }).then<UserUsageLimit>(response => response.json()).then((response) => {
+            if(response){
+                setGpt35UsageInfo({
+                    title: "GPT-3 Daily",
+                    limit: response.dailyChatLimit,
+                    usage: response.dailyChatUsage,
+                    type: "daily"
+                })
+                setGpt4UsageInfo({
+                    title: "GPT-4 Daily",
+                    limit: response.dailyGpt4Limit,
+                    usage: response.dailyGpt4Usage,
+                    type: "daily"
+                })
+                setGpt35TotalUsageInfo({
+                    title: "GPT-3 Total",
+                    limit: response.chatLimit,
+                    usage: response.chatUsage,
+                    type: "total"
+                })
+                setGpt4TotalUsageInfo({
+                    title: "GPT-4 Total",
+                    limit: response.gpt4Limit,
+                    usage: response.gpt4Usage,
+                    type: "total"
+                })
+            }
+        })
+    }
 
     return (
         <Header height={56} className={classes.header}>
@@ -126,11 +189,11 @@ export default function MainHeader({ opened, setOpened }: Props){
                                         </UnstyledButton>
                                     </Menu.Target>
                                     <Menu.Dropdown>
-                                        {/*<Menu.Item*/}
-                                        {/*    icon={<IconHeart size="0.9rem" color={theme.colors.red[6]} stroke={1.5} />}*/}
-                                        {/*>*/}
-                                        {/*    Liked posts*/}
-                                        {/*</Menu.Item>*/}
+                                        <Menu.Item onClick={() => onUsageClick()}
+                                            icon={<IconChartPie2 size="0.9rem" stroke={1.5} />}
+                                        >
+                                            Usage
+                                        </Menu.Item>
                                         {/*<Menu.Item*/}
                                         {/*    icon={<IconStar size="0.9rem" color={theme.colors.yellow[6]} stroke={1.5} />}*/}
                                         {/*>*/}
@@ -153,6 +216,23 @@ export default function MainHeader({ opened, setOpened }: Props){
                                             Logout
                                         </Menu.Item>
                                     </Menu.Dropdown>
+
+                                    <Modal opened={usageModalOpened} onClose={onUsageClose} size="auto" title="Usage Status" centered>
+                                        <Center className={classes.usageModalTitle}>
+                                            <Title order={3}>Daily Usage</Title>
+                                        </Center>
+                                        <Group position="center" spacing="xs">
+                                            <StatusBar {...gpt35UsageInfo}/>
+                                            <StatusBar {...gpt4UsageInfo}/>
+                                        </Group>
+                                        <Center className={classes.usageModalTitle}>
+                                            <Title order={3}>Total Usage</Title>
+                                        </Center>
+                                        <Group position="center" spacing="xs">
+                                            <StatusBar {...gpt35TotalUsageInfo}/>
+                                            <StatusBar {...gpt4TotalUsageInfo}/>
+                                        </Group>
+                                    </Modal>
                                 </Menu>
                             ) : (
                                 <Button onClick={() => signIn()} variant="outline" color={colorScheme === "dark" ? "gray": "dark"} radius="lg">Login</Button>

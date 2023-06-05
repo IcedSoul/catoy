@@ -363,6 +363,7 @@ export function NavbarCode({opened, setOpened}: NavbarCodeProps){
             if(treeNode.type === "file"){
                 deleteCode(treeNode).then()
                 if(refreshCode){
+                    setOpened(false)
                     refreshCode({codeId: "", uri: "", suffix: ""})
                 }
             }
@@ -412,6 +413,7 @@ export function NavbarCode({opened, setOpened}: NavbarCodeProps){
         if(codeSegment){
             treeNode.codeId = codeSegment.codeId
             if(refreshCode){
+                setOpened(false)
                 refreshCode({
                     codeId: codeSegment.codeId,
                     uri: treeNode.uri,
@@ -441,6 +443,7 @@ export function NavbarCode({opened, setOpened}: NavbarCodeProps){
     const toggleExpand = (treeNode: TreeNode<any, string>) => {
         if(treeNode.type === "file"){
             if(refreshCode){
+                setOpened(false)
                 refreshCode({
                     codeId: treeNode.codeId,
                     uri: treeNode.uri,

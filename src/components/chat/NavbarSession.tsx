@@ -90,6 +90,7 @@ export const NavbarSession = ({opened, setOpened}: NavbarSessionProps) => {
             addCookie(CHAT_SESSION_ID, chatSession.sessionId)
         }
         refreshMessages?.()
+        setOpened(false)
     }
 
     const deleteSession = async (sessionId: string, event: any) => {

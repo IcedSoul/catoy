@@ -4,13 +4,26 @@ import {UserUsageLimit} from "@/common/server/repository/Models";
 
 class UserUsageLimitService{
 
+    getUsageLimit = (email: string) => {
+        return  userUsageLimits.getUserUsageLimit(email).then((userUsageLimit) => {
+            if(userUsageLimit) {
+                const oldUserUsageLimit = JSON.parse(JSON.stringify(userUsageLimit))
+                userUsageLimit = this.clearDailyUsage(userUsageLimit)
+                if(userUsageLimit.lastUpdate !== oldUserUsageLimit.lastUpdate) {
+                    userUsageLimits.updateUserUsageLimit(userUsageLimit).then()
+                }
+                return userUsageLimit
+            }
+            return null
+        })
+    }
+
     increaseChatUsage = (email: string, model?: string) => {
         userUsageLimits.getUserUsageLimit(email).then((userUsageLimit) => {
             if(userUsageLimit) {
                 userUsageLimit = this.clearDailyUsage(userUsageLimit)
                 // gpt-4 model has different limited
                 if (model && isGPT4(model)) {
-                    console.log(`userUsageLimit: ${JSON.stringify(userUsageLimit)}`)
                     if(!userUsageLimit?.gpt4Usage) {
                         userUsageLimit.gpt4Usage = 0
                     }
@@ -56,8 +69,9 @@ class UserUsageLimitService{
 
     clearDailyUsage = (userUsageLimit: UserUsageLimit) => {
         const today = new Date()
-        const lastUpdate = userUsageLimit.lastUpdate || new Date()
+        const lastUpdate = new Date(userUsageLimit.lastUpdate) || new Date()
         if(!isSameDay(today, lastUpdate)) {
+            console.log(`today: ${today}, lastUpdate: ${lastUpdate}, clear daily usage`)
             userUsageLimit.dailyChatUsage = 0
             userUsageLimit.dailyGpt4Usage = 0
             userUsageLimit.lastUpdate = today

@@ -17,7 +17,7 @@ export const OpenAiApi = new OpenAIApi(configuration)
 
 export const SupportModels = {
     completion: ['text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci', 'curie', 'babbage', 'ada'],
-    chat: ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-4', 'gpt-4-0314']
+    chat: ['gpt-3.5-turbo', 'gpt-4']
 }
 
 export const isGPT4 = (model: string): boolean => {

@@ -253,6 +253,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
             role: MessageSource.USER,
             content: message
         }
+        setInputMessage("")
         setMessages((prev) => [...messages, sendChatMessage])
         currentModel ? sendMessage(currentModel, sendChatMessage) : null
         setIsLoading(true)

@@ -35,6 +35,7 @@ class MessageService {
         }
         messages.addMessage(message).then()
     }
+
 }
 
 export const messageService = new MessageService()
