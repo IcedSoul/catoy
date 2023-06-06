@@ -10,6 +10,7 @@ export const mongoDbInfo = {
         UserUsageLimits: 'userUsageLimits',
         CodeSegment: 'codeSegment',
         FileTreeData: 'fileTreeData',
+        Note: 'note',
     }
 }
 

@@ -1,6 +1,7 @@
 export enum MessageSource {
     USER = "user",
-    ASSISTANT = "assistant"
+    ASSISTANT = "assistant",
+    SYSTEM = "system",
 }
 
 export interface SessionUser {

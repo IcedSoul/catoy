@@ -46,7 +46,20 @@ export interface CodeSegment {
 export interface FileTreeData {
     id: string,
     userEmail: string,
-    classification: "doc" | "code",
+    classification: "note" | "code",
     name: string,
     content: string,
+}
+
+export interface Note {
+    noteId: string,
+    userEmail: string,
+    title: string,
+    content: string,
+    version: string,
+    share: boolean,
+    shareUrl: string,
+    tags: Array<string>,
+    createTime: Date,
+    updateTime: Date,
 }

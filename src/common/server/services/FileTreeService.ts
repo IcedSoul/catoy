@@ -3,7 +3,7 @@ import {FileTreeData} from "@/common/server/repository/Models";
 import {randomUUID} from "crypto";
 
 class FileTreeService{
-    getUserFileTree = async (userEmail: string, classification: "doc" | "code"): Promise<Array<FileTreeData>> => {
+    getUserFileTree = async (userEmail: string, classification: "note" | "code"): Promise<Array<FileTreeData>> => {
         return fileTrees.getFileTreeDataByUser(userEmail, classification).then((fileTrees: Array<FileTreeData>) => {
            if(fileTrees && fileTrees.length > 0){
                return fileTrees
@@ -12,7 +12,7 @@ class FileTreeService{
         })
     }
 
-    updateUserFileTree = async (userEmail: string, classification: "doc" | "code", fileTreeData: FileTreeData) => {
+    updateUserFileTree = async (userEmail: string, classification: "note" | "code", fileTreeData: FileTreeData) => {
         if(userEmail !== fileTreeData.userEmail){
             throw new Error("userEmail not match")
         }
@@ -22,7 +22,7 @@ class FileTreeService{
         fileTrees.updateFileTreeData(fileTreeData).then()
     }
 
-    addUserFileTree = async (userEmail: string, classification: "doc" | "code", fileTreeData: FileTreeData) => {
+    addUserFileTree = async (userEmail: string, classification: "note" | "code", fileTreeData: FileTreeData) => {
         if(fileTreeData.id){
             this.updateUserFileTree(userEmail, classification, fileTreeData).then()
             return
@@ -33,7 +33,7 @@ class FileTreeService{
         fileTrees.addFileTreeData(fileTreeData).then()
     }
 
-    removeUserFileTree = async (userEmail: string, classification: "doc" | "code", fileTreeId: string) => {
+    removeUserFileTree = async (userEmail: string, classification: "note" | "code", fileTreeId: string) => {
         await fileTrees.removeFileTreeData(userEmail, classification, fileTreeId)
     }
 

@@ -11,6 +11,7 @@ import {useEffect, useState} from "react";
 import Router from 'next/router'
 import {NavbarSession} from "@/components/chat/NavbarSession";
 import {NavbarCode} from "@/components/completion/NavbarCode";
+import {NavbarNote} from "@/components/doc/NavbarNote";
 
 const useStyles = createStyles((theme) => ({
     navbar: {
@@ -105,7 +106,8 @@ const toys = [
 export enum NavBarType {
     NONE,
     CHAT,
-    COMPLETION
+    COMPLETION,
+    NOTE
 }
 
 type NvaBarProps = {
@@ -123,6 +125,8 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
             setNavBarType(NavBarType.CHAT)
         } else if(route === '/completion'){
             setNavBarType(NavBarType.COMPLETION)
+        } else if(route === '/note'){
+            setNavBarType(NavBarType.NOTE)
         }
     }, [])
 
@@ -158,7 +162,8 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
             </Navbar.Section>
             {
                 navBarType === NavBarType.CHAT ? (<NavbarSession opened={opened} setOpened={setOpened}/>) :
-                    navBarType === NavBarType.COMPLETION ? (<NavbarCode opened={opened} setOpened={setOpened}/>): null
+                    navBarType === NavBarType.COMPLETION ? (<NavbarCode opened={opened} setOpened={setOpened}/>):
+                        navBarType === NavBarType.NOTE ? (<NavbarNote opened={opened} setOpened={setOpened}/>) : null
             }
         </Navbar>
     );

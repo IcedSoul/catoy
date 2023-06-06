@@ -24,16 +24,16 @@ class UserUsageLimitService{
                 userUsageLimit = this.clearDailyUsage(userUsageLimit)
                 // gpt-4 model has different limited
                 if (model && isGPT4(model)) {
-                    if(!userUsageLimit?.gpt4Usage) {
+                    if(!userUsageLimit?.gpt4Usage || !("gpt4Usage" in userUsageLimit)) {
                         userUsageLimit.gpt4Usage = 0
                     }
-                    if(!userUsageLimit?.gpt4Limit) {
+                    if(!userUsageLimit?.gpt4Limit || !("gpt4Limit" in userUsageLimit)) {
                         userUsageLimit.gpt4Limit = parseInt(process.env.DEFAULT_GPT4_LIMIT || "2000")
                     }
-                    if(!userUsageLimit?.dailyGpt4Usage) {
+                    if(!userUsageLimit?.dailyGpt4Usage || !("dailyGpt4Usage" in userUsageLimit)) {
                         userUsageLimit.dailyGpt4Usage = 0
                     }
-                    if(!userUsageLimit?.dailyGpt4Limit) {
+                    if(!userUsageLimit?.dailyGpt4Limit || !("dailyGpt4Limit" in userUsageLimit)) {
                         userUsageLimit.dailyGpt4Limit = parseInt(process.env.DEFAULT_DAILY_GPT4_LIMIT || "100")
                     }
                     if(userUsageLimit.dailyGpt4Usage >= userUsageLimit.dailyGpt4Limit){

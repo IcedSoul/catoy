@@ -1,12 +1,11 @@
 import {
     CHAT_SESSION_ID,
-    ChatMessage, SessionUser
+    ChatMessage, MessageSource, SessionUser
 } from "@/common/client/ChatGPTCommon";
 import {AxiosResponse} from "axios";
 import {createWebReadableStreamResponse, getUserInfo, OpenAiApi, SupportModels} from "@/common/server/CommonUtils";
 import {messageService} from "@/common/server/services/MessageService";
 import {randomUUID} from "crypto";
-import {sessions} from "@/common/server/repository/Sessions";
 import {sessionService} from "@/common/server/services/SessionService";
 
 interface GetMessageParams {
@@ -15,6 +14,11 @@ interface GetMessageParams {
     sessionId?: string,
     historyMessage: Array<ChatMessage>,
     userEmail?: string
+}
+
+const systemPrompt = {
+    role: MessageSource.SYSTEM,
+    content: "Please use Markdown syntax for all answers and follow the rules below: 1. If the answer contains code snippets, please specify the specific language.",
 }
 
 export async function POST(request: Request){
@@ -54,10 +58,9 @@ const getOpenAIResponse = (params: GetMessageParams): Promise<AxiosResponse> | n
 }
 
 const chat = (params: GetMessageParams): Promise<AxiosResponse> => {
-    console.log(`chat with ${params.model}`)
     return OpenAiApi.createChatCompletion({
         model: params.model,
-        messages: [...params.historyMessage, params.message],
+        messages: [systemPrompt, ...params.historyMessage, params.message],
         stream: true,
         max_tokens: 2048,
         user: params.userEmail

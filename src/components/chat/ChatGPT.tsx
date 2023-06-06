@@ -402,6 +402,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                 >
                     <Grid.Col span={11}>
                         <Textarea
+                            disabled={isLoading}
                             ref={messageTextArea}
                             placeholder="Ask ChatGPT (Enter or click Send Icon to send message)"
                             autosize

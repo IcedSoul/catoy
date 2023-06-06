@@ -12,7 +12,7 @@ class FileTrees {
         this.fileTreeDataCollection = mongoClient.getCollection<FileTreeDataPojo>(mongoDbInfo.collections.FileTreeData)
     }
 
-    async getFileTreeDataByUser(userEmail: string, classification: "doc" | "code"): Promise<Array<FileTreeData>> {
+    async getFileTreeDataByUser(userEmail: string, classification: "note" | "code"): Promise<Array<FileTreeData>> {
         const query = {userEmail, classification}
         return this.fileTreeDataCollection.find(query).toArray()
     }
@@ -22,7 +22,7 @@ class FileTrees {
         return this.fileTreeDataCollection.insertOne(insertFileTreeData).then(() => true).catch(() => false)
     }
 
-    async removeFileTreeData(userEmail: string, classification: "doc" | "code", id: string): Promise<boolean> {
+    async removeFileTreeData(userEmail: string, classification: "note" | "code", id: string): Promise<boolean> {
         const query = {userEmail, classification, id}
         return this.fileTreeDataCollection.deleteMany(query).then(() => true).catch(() => false)
     }
