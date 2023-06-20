@@ -13,7 +13,7 @@ import {
 import {IconCheck, IconDots, IconEdit, IconFileCode, IconFolder, IconTrash, IconX} from "@tabler/icons-react";
 import {notifications} from "@mantine/notifications";
 import {db, getClassWithColor} from "@sinm/react-file-tree/lib/file-icons/file-icons";
-import {CodeSegment, FileTreeData} from "@/common/server/repository/Models";
+import {CodeSegment, FileTreeData, Note} from "@/common/server/repository/Models";
 import {HttpMethod} from "@/common/client/ChatGPTCommon";
 
 
@@ -95,7 +95,7 @@ interface NavbarFileTreeProps {
 export const NavbarFileTree = ({opened, setOpened, type}: NavbarFileTreeProps) => {
     const { classes } = useStyles()
     const [ tree, setTree ] = useState<TreeNode<any, string>>(root)
-    const { refreshCode, setRefreshFile } = useGlobalContext()
+    const { refreshCode, setRefreshFile, refreshNote } = useGlobalContext()
     const fileTreeRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const { data: session } = useSession()
@@ -186,7 +186,7 @@ export const NavbarFileTree = ({opened, setOpened, type}: NavbarFileTreeProps) =
                                 icon={<IconFileCode size={12}/>}
                                 onClick={(event) => createNewDirectoryOrFile("file", treeNode, event)}
                             >
-                                New File
+                                New { type === "code" ? "File" : "Note" }
                             </Menu.Item>
                         </>
                     )
@@ -222,7 +222,7 @@ export const NavbarFileTree = ({opened, setOpened, type}: NavbarFileTreeProps) =
             inputRef.current?.focus()
             return
         }
-        if(type === "note" && !treeNode.name.endsWith(".note")){
+        if(treeNode.type === "file" && type === "note" && !treeNode.name.endsWith(".note")){
             treeNode.name = changeSuffix(treeNode.name, "note")
         }
         if(isRepeaterTreeNodeName(treeNode)){
@@ -445,28 +445,81 @@ export const NavbarFileTree = ({opened, setOpened, type}: NavbarFileTreeProps) =
             headers,
             body: JSON.stringify({ codeId: treeNode.codeId })
         }
-        fetch("/api/completion/code", requestInit).then().catch((error) => {
+        fetch("/api/completion/code", requestInit).then(() => {
+            notifications.show({ message: "Delete Success" })
+        }).catch((error) => {
             notifications.show(error)
         })
     }
 
     const createNote = async (treeNode: TreeNode<any, string>) => {
-
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        const name = treeNode.name.split(".")?.[0]
+        const body = {
+            title: name,
+            content: '',
+            tags: [],
+        }
+        const requestInit: RequestInit = {
+            method: HttpMethod.POST,
+            headers,
+            body: JSON.stringify(body)
+        }
+        const note: Note = await fetch('/api/note', requestInit).then((response) => response.json()).catch((error) => {
+            notifications.show(error)
+        })
+        if(note){
+            treeNode.noteId = note.noteId
+            if(refreshNote){
+                setOpened(false)
+                refreshNote({
+                    noteId: note.noteId,
+                    uri: treeNode.uri,
+                })
+            }
+        }
     }
 
     const deleteNote = async (treeNode: TreeNode<any, string>) => {
-
+        if(!treeNode.noteId){
+            return
+        }
+        const headers = {
+            'Content-Type': 'application/json'
+        }
+        const requestInit: RequestInit = {
+            method: HttpMethod.DELETE,
+            headers,
+            body: JSON.stringify({ noteId: treeNode.noteId })
+        }
+        fetch("/api/note", requestInit).then(() => {
+            notifications.show({ message: "Delete Success" })
+        }).catch((error) => {
+            notifications.show(error)
+        })
     }
 
     const toggleExpand = (treeNode: TreeNode<any, string>) => {
         if(treeNode.type === "file"){
-            if(refreshCode){
-                setOpened(false)
-                refreshCode({
-                    codeId: treeNode.codeId,
-                    uri: treeNode.uri,
-                    suffix: treeNode.name.split(".").pop()
-                })
+            if(type === "code") {
+                if (refreshCode) {
+                    setOpened(false)
+                    refreshCode({
+                        codeId: treeNode.codeId,
+                        uri: treeNode.uri,
+                        suffix: treeNode.name.split(".").pop()
+                    })
+                }
+            } else if(type === "note") {
+                if (refreshNote) {
+                    setOpened(false)
+                    refreshNote({
+                        noteId: treeNode.noteId,
+                        uri: treeNode.uri,
+                    })
+                }
             }
         } else {
             treeNode.expanded = !treeNode.expanded;

@@ -7,7 +7,7 @@ import {SessionProvider} from "next-auth/react";
 import {Notifications} from "@mantine/notifications";
 import {GlobalContextProvider} from "@/components/providers/GlobalContextProvider";
 import Script from "next/script";
-import {CodeProps, FileProps, InsertCodeProps} from "@/common/client/CompleteCommon";
+import {CodeProps, FileProps, InsertCodeProps, NoteProps} from "@/common/client/CompleteCommon";
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
     const { Component, pageProps } = props;
@@ -16,6 +16,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
     const [refreshMessage, setRefreshMessage] = useState<() => void>(() => {});
     const [refreshCode, setRefreshCode] = useState<(codeProps: CodeProps) => void>(() => {});
     const [refreshFile, setRefreshFile] = useState<(fileProps: FileProps) => void>(() => {});
+    const [refreshNote, setRefreshNote] = useState<(noteProps: NoteProps) => void>(() => {});
     const [refreshInsertCode, setRefreshInsertCode] = useState<(insertCodeProps: InsertCodeProps) => void>(() => {});
 
     const toggleColorScheme = (value?: ColorScheme) => {
@@ -56,6 +57,8 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
                         setRefreshFile={setRefreshFile}
                         refreshInsertCode={refreshInsertCode}
                         setRefreshInsertCode={setRefreshInsertCode}
+                        refreshNote={refreshNote}
+                        setRefreshNote={setRefreshNote}
                     >
                         <Notifications />
                         <SessionProvider session={pageProps.session}>

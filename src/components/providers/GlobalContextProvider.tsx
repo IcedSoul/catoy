@@ -1,5 +1,5 @@
 import {createContext, ReactNode, useContext} from "react";
-import {CodeProps, FileProps, InsertCodeProps} from "@/common/client/CompleteCommon";
+import {CodeProps, FileProps, InsertCodeProps, NoteProps} from "@/common/client/CompleteCommon";
 
 interface GlobalContextProps {
     refreshSession: () => void,
@@ -12,6 +12,8 @@ interface GlobalContextProps {
     setRefreshFile: (refreshFile: (fileProps: FileProps) => void) => void,
     refreshInsertCode: (insertCode: InsertCodeProps) => void,
     setRefreshInsertCode: (refreshInsertCode: (insertCode: InsertCodeProps) => void) => void,
+    refreshNote: (noteProps: NoteProps) => void,
+    setRefreshNote: (refreshNote: (noteProps: NoteProps) => void) => void,
 }
 
 interface GlobalContextProviderProps extends GlobalContextProps{
@@ -28,6 +30,6 @@ export function useGlobalContext (): GlobalContextProps {
     return context
 }
 
-export function GlobalContextProvider({children, refreshSession, setRefreshSession, refreshMessages, setRefreshMessages, refreshCode, setRefreshCode, refreshFile, setRefreshFile, refreshInsertCode, setRefreshInsertCode}: GlobalContextProviderProps): JSX.Element {
-    return (<GlobalContext.Provider value={{ refreshSession, setRefreshSession, refreshMessages, setRefreshMessages, refreshCode, setRefreshCode, refreshFile, setRefreshFile, refreshInsertCode, setRefreshInsertCode}}>{ children }</GlobalContext.Provider>)
+export function GlobalContextProvider({children, refreshSession, setRefreshSession, refreshMessages, setRefreshMessages, refreshCode, setRefreshCode, refreshFile, setRefreshFile, refreshInsertCode, setRefreshInsertCode, refreshNote, setRefreshNote}: GlobalContextProviderProps): JSX.Element {
+    return (<GlobalContext.Provider value={{ refreshSession, setRefreshSession, refreshMessages, setRefreshMessages, refreshCode, setRefreshCode, refreshFile, setRefreshFile, refreshInsertCode, setRefreshInsertCode, refreshNote, setRefreshNote}}>{ children }</GlobalContext.Provider>)
 }

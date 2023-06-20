@@ -4,7 +4,7 @@ export const supportedLanguages = [
     // doc and config
     'markdown', 'yaml', 'xml', 'json',
     // regular languages
-    'java', 'python', 'cpp', 'csharp',
+    'java', 'python', 'cpp', 'csharp', 'c', 'go', 'rust', 'ruby', 'php', 'scala', 'kotlin',
     // frontend
     'javascript', 'typescript', 'html', 'css', 'scss', 'less',
 ]
@@ -37,6 +37,7 @@ export const getTreeNode = (id: string, data: TreeNode<any, string>, parent: Tre
         uri: data.uri,
         expanded: data.expanded,
         codeId: data?.codeId || '',
+        noteId: data?.noteId || '',
         parent,
     }
     treeNode.children = data.children?.map((child) => getTreeNode(id, child, treeNode)) || []
@@ -51,6 +52,7 @@ const cleanTreeNode = (treeNode: TreeNode<any, string>): TreeNode<any, string> =
         children: treeNode.children?.map((child) => cleanTreeNode(child)),
         expanded: treeNode.expanded,
         codeId: treeNode?.codeId || '',
+        noteId: treeNode?.noteId || '',
     }
 }
 
@@ -103,6 +105,11 @@ export interface InsertCodeProps {
     monaco?: any,
 }
 
+export interface NoteProps {
+    uri: string,
+    noteId: string,
+}
+
 export const getLanguageFromSuffix = (suffix: string): string => {
     const suffixToLanguage: any = {
         "md": "markdown",
@@ -120,6 +127,12 @@ export const getLanguageFromSuffix = (suffix: string): string => {
         "css": "css",
         "scss": "scss",
         "less": "less",
+        "go": "go",
+        "rs": "rust",
+        "rb": "ruby",
+        "php": "php",
+        "scala": "scala",
+        "kt": "kotlin",
     }
     return suffixToLanguage[suffix] || "markdown"
 }
@@ -140,6 +153,12 @@ export const getSuffixFromLanguage = (language: string): string => {
         "css": "css",
         "scss": "scss",
         "less": "less",
+        "go": "go",
+        "rust": "rs",
+        "ruby": "rb",
+        "php": "php",
+        "scala": "scala",
+        "kotlin": "kt",
     }
     return languageToSuffix[language] || "md"
 }

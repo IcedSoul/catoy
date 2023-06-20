@@ -22,10 +22,13 @@ class NoteService {
         note.tags = []
         note.createTime = new Date()
         note.updateTime = new Date()
-        return notes.addNote(note)
+        await notes.addNote(note)
+        return note
     }
 
     removeNote = async (email: string, noteId: string) => {
         return notes.removeNote(email, noteId)
     }
 }
+
+export const noteService = new NoteService()
