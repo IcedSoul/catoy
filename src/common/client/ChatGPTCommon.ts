@@ -43,3 +43,10 @@ export interface ChatSession {
 }
 
 export const CHAT_SESSION_ID = "chat-session-id"
+
+export const markdownLineFeedAdapter = (str: string): string =>{
+    // 匹配单个换行符
+    const regex = /\n(?!\n)/g;
+    // 将匹配到的单个换行符替换为双空格和换行符
+    return str.replace(regex, '  \n');
+}

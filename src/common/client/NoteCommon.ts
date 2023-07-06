@@ -1,0 +1,1 @@
+export const NOTE_ID = "note-id"

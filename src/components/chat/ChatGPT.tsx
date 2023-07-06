@@ -13,10 +13,16 @@ import {
     Space,
     Stack,
     Textarea,
-    ThemeIcon, useMantineColorScheme
+    ThemeIcon, Tooltip, useMantineColorScheme
 } from '@mantine/core';
 
-import {IconBrandOpenai, IconBrandTelegram, IconUfo} from "@tabler/icons-react";
+import {
+    IconBrandOpenai,
+    IconBrandTelegram,
+    IconClearFormatting,
+    IconRefresh,
+    IconUfo
+} from "@tabler/icons-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 import './markdown-styles.css'
@@ -29,7 +35,7 @@ import {
     CHAT_SESSION_ID,
     ChatMessage,
     decoder,
-    HttpMethod,
+    HttpMethod, markdownLineFeedAdapter,
     MessageSource
 } from "@/common/client/ChatGPTCommon";
 import {getCookieByName, removeCookie} from "@/common/client/common";
@@ -125,6 +131,10 @@ const useStyles = createStyles((theme) => ({
             '50%': { opacity: 0 },
         }
     },
+    bottomIcon: {
+        paddingTop: theme.spacing.xs,
+        paddingBottom: theme.spacing.xs,
+    }
 }));
 
 interface ChatGPTProps {
@@ -238,7 +248,15 @@ export const ChatGPT = ({}: ChatGPTProps) => {
     const onTextAreaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if(event.key === 'Enter' && (event.shiftKey || event.ctrlKey)){
             event.preventDefault()
-            setInputMessage(inputMessage.concat('\n'))
+            const selectionStart = event.currentTarget.selectionStart
+            const selectionEnd = event.currentTarget.selectionEnd
+            setInputMessage(inputMessage.substring(0, selectionStart).concat('\n', inputMessage.substring(selectionEnd)))
+            const textArea = event.currentTarget
+            const position = selectionStart + 1
+            setTimeout(() => {
+                textArea.setSelectionRange(position, position)
+            })
+
         } else if(event.key === 'Enter'){
             event.preventDefault()
             onSendMessage()
@@ -246,7 +264,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
     }
 
     const onSendMessage = () => {
-        const message = inputMessage.trim()
+        const message = markdownLineFeedAdapter(inputMessage.trim())
         if(!message) { return }
         messageTextArea.current ? messageTextArea.current.value = '' : null
         const sendChatMessage: ChatMessage = {
@@ -262,6 +280,20 @@ export const ChatGPT = ({}: ChatGPTProps) => {
             content: ""
         })
         setTimeout(() => scrollToBottom(), 50)
+    }
+
+    const onReGenerateMessage = () => {
+        //to do
+        notifications.show({
+            title: 'Not implemented',
+            message: "This feature is not implemented yet.",
+        })
+    }
+
+    const onClearMessages = () => {
+        setMessages([])
+        removeCookie(CHAT_SESSION_ID)
+        refreshSession?.()
     }
 
     const onModelChanged = (model: string) => {
@@ -328,7 +360,6 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                 >
                     {/* eslint-disable-next-line react/no-children-prop */}
                     <ReactMarkdown children={ message?.content || ""}
-                        // className={classes.markdownBody}
                         className={`markdown-body ${colorScheme}`}
                         remarkPlugins={[remarkGfm]}
                         components={{
@@ -355,7 +386,19 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                     />
                     {/*{(isLoading && key >= messages.length) || true ? (<IconCursorText size={22} stroke={1.5} className={classes.cursorPointer}/>) : null}*/}
                 </Flex>
-                <Space w="lg"/>
+                {
+                    message?.role === MessageSource.ASSISTANT && !isLoading && key >= messages.length - 1 ? (
+                        <Tooltip label={"Regenerate"}>
+                            <ThemeIcon
+                                variant="gradient"
+                                gradient={{ deg: 0, from: 'dark', to: 'dark' }}
+                                onClick={onReGenerateMessage}
+                            >
+                                <IconRefresh className={classes.icon} size={rem(20)} stroke={1.5} />
+                            </ThemeIcon>
+                        </Tooltip>
+                    ): (<Space w="lg"/>)
+                }
             </Flex>
         </Paper>
     ));
@@ -406,7 +449,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                             ref={messageTextArea}
                             placeholder="Ask ChatGPT (Enter or click Send Icon to send message)"
                             autosize
-                            minRows={1}
+                            minRows={3}
                             maxRows={10}
                             value={inputMessage}
                             onChange={onTextAreaChange}
@@ -414,9 +457,18 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                         />
                     </Grid.Col>
                     <Grid.Col span={1}>
-                        <ActionIcon variant="filled" size="2rem" w="100%" onClick={onSendMessage} disabled={isLoading}>
-                            <IconBrandTelegram size="1rem" />
-                        </ActionIcon>
+                        <Flex direction="column" align="center" justify="center" gap="xs">
+                            <Tooltip label="Send Message">
+                                <ActionIcon variant="gradient" size="2rem" w="100%" onClick={onSendMessage} disabled={isLoading}>
+                                    <IconBrandTelegram size="1rem" />
+                                </ActionIcon>
+                            </Tooltip>
+                            <Tooltip label="Clear History Message">
+                                <ActionIcon variant="filled" size="2rem" w="100%" onClick={onClearMessages} disabled={isLoading}>
+                                    <IconClearFormatting size="1rem" />
+                                </ActionIcon>
+                            </Tooltip>
+                        </Flex>
                     </Grid.Col>
                 </Grid>
             </Stack>

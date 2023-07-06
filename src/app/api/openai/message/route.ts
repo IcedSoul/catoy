@@ -3,22 +3,30 @@ import {
     ChatMessage, MessageSource, SessionUser
 } from "@/common/client/ChatGPTCommon";
 import {AxiosResponse} from "axios";
-import {createWebReadableStreamResponse, getUserInfo, OpenAiApi, SupportModels} from "@/common/server/CommonUtils";
+import {
+    createWebReadableStreamResponse,
+    getUserInfo,
+    OpenAiApi,
+    SupportModels
+} from "@/common/server/CommonUtils";
 import {messageService} from "@/common/server/services/MessageService";
 import {randomUUID} from "crypto";
 import {sessionService} from "@/common/server/services/SessionService";
+import {checkAndFilterMessageHistory} from "@/common/server/utils/GPTUtils";
 
 interface GetMessageParams {
     model: string,
     message: ChatMessage,
     sessionId?: string,
     historyMessage: Array<ChatMessage>,
-    userEmail?: string
+    userEmail?: string,
 }
 
 const systemPrompt = {
     role: MessageSource.SYSTEM,
-    content: "Please use Markdown syntax for all answers and follow the rules below: 1. If the answer contains code snippets, please specify the specific language.",
+    content: "Please use Markdown syntax for all answers and follow the rules below: \n " +
+        "1. If the answer contains code snippets, please specify the specific language. \n " +
+        "2. Try to reply in the primary language of the user, unless the user has explicitly requested that another language be used.",
 }
 
 export async function POST(request: Request){
@@ -50,6 +58,7 @@ export async function POST(request: Request){
 
 const getOpenAIResponse = (params: GetMessageParams): Promise<AxiosResponse> | null => {
     if(SupportModels.chat.includes(params.model)){
+        checkAndFilterMessageHistory(params.historyMessage, params.model)
         return chat(params);
     } else if (SupportModels.chat.includes(params.model)){
         return completion(params)
@@ -62,7 +71,7 @@ const chat = (params: GetMessageParams): Promise<AxiosResponse> => {
         model: params.model,
         messages: [systemPrompt, ...params.historyMessage, params.message],
         stream: true,
-        max_tokens: 2048,
+        max_tokens: 1024,
         user: params.userEmail
     }, { responseType: "stream" })
 }
@@ -73,7 +82,7 @@ const completion = (params: GetMessageParams): Promise<AxiosResponse> => {
         prompt: params.message.content,
         stream: true,
         temperature: 0.7,
-        max_tokens: 2048,
+        max_tokens: 1024,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
