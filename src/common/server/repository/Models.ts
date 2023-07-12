@@ -7,6 +7,7 @@ export interface User extends SessionUser{
 }
 
 export interface Message extends ChatMessage {
+    _id?: string,
     sessionId: string | null,
     userEmail: string,
     model?: string,

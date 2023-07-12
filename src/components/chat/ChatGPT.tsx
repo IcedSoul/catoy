@@ -196,14 +196,15 @@ export const ChatGPT = ({}: ChatGPTProps) => {
         })
     }
 
-    const sendMessage = async (model: string, message: ChatMessage) => {
+    const sendMessage = async (model: string, message: ChatMessage, reGenerate: boolean = false) => {
         const headers = {
             'Content-Type': 'application/json'
         }
         const body = {
             model,
             message,
-            sessionId: getCookieByName(CHAT_SESSION_ID)
+            sessionId: getCookieByName(CHAT_SESSION_ID),
+            reGenerate
         }
         const requestInit: RequestInit = {
             method: HttpMethod.POST,
@@ -273,8 +274,8 @@ export const ChatGPT = ({}: ChatGPTProps) => {
         }
         setInputMessage("")
         setMessages((prev) => [...messages, sendChatMessage])
-        currentModel ? sendMessage(currentModel, sendChatMessage) : null
         setIsLoading(true)
+        currentModel ? sendMessage(currentModel, sendChatMessage) : null
         setCurrentLoadingMessage({
             role: MessageSource.ASSISTANT,
             content: ""
@@ -283,11 +284,21 @@ export const ChatGPT = ({}: ChatGPTProps) => {
     }
 
     const onReGenerateMessage = () => {
-        //to do
-        notifications.show({
-            title: 'Not implemented',
-            message: "This feature is not implemented yet.",
+        if(messages.length < 2){
+            return
+        }
+        const message = messages[messages.length - 2]
+        if (message.role !== MessageSource.USER){
+            return
+        }
+        setMessages((prev) => [...messages.slice(0, -1)])
+        setIsLoading(true)
+        currentModel ? sendMessage(currentModel, message, true) : null
+        setCurrentLoadingMessage({
+            role: MessageSource.ASSISTANT,
+            content: ""
         })
+        setTimeout(() => scrollToBottom(), 50)
     }
 
     const onClearMessages = () => {

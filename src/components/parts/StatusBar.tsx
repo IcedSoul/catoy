@@ -53,11 +53,11 @@ export default function StatusBar( props: StatusBarProps) {
                     Usage
                 </Text>
                 <Text fz="sm" color="dimmed">
-                    { Math.round((props?.usage || 0) / (props?.limit || 1)) }%
+                    { Math.round(((props?.usage || 0) / (props?.limit || 1) * 10000)) / 100.0 }%
                 </Text>
             </Group>
 
-            <Progress value={Math.round((props?.usage || 0) / (props?.limit || 1))} mt={5} />
+            <Progress value={Math.round(((props?.usage || 0) / (props?.limit || 1)) * 10000) / 100.0} mt={5} />
 
             <Group position="apart" mt="md">
                 <Text fz="sm"> {props?.usage} / {props?.limit} conversations</Text>

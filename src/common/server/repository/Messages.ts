@@ -22,8 +22,11 @@ class Messages{
         return this.messagesCollection.insertOne(insertMessage).then(() => true).catch(() => false)
     }
 
-    async clearMessage(): Promise<boolean> {
-        return this.messagesCollection.drop().then(() => true).catch(() => false)
+    async deleteMessageBySessionId(userEmail: string, sessionId: string, count: number): Promise<boolean> {
+        const query = { userEmail, sessionId }
+        const toBeDelete: Array<MessagePojo> = await this.messagesCollection.find(query).sort( { $natural: -1 }).limit(count).toArray()
+        const deleteIds: Array<string> = toBeDelete.map((message) => message._id as string)
+        return this.messagesCollection.deleteMany({ _id: { $in: deleteIds } }).then(() => true).catch(() => false)
     }
 }
 

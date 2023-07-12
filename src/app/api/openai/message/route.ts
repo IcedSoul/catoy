@@ -20,6 +20,8 @@ interface GetMessageParams {
     sessionId?: string,
     historyMessage: Array<ChatMessage>,
     userEmail?: string,
+    reGenerate?: boolean,
+    modify?: boolean
 }
 
 const systemPrompt = {
@@ -34,14 +36,23 @@ export async function POST(request: Request){
     const params: GetMessageParams = await request.json()
     params.userEmail = user.email
     params.historyMessage = []
+    params.message = {
+        role: params.message.role,
+        content: params.message.content,
+    }
     if(params.sessionId){
         params.historyMessage = await messageService.getChatMessages(user.email, params.sessionId)
         if(params.historyMessage.length === 0){
             params.sessionId = ""
         }
-        const contextLimit = parseInt(process.env.DEFAULT_CHAT_COTEXT_LIMIT || "50")
+        const contextLimit = parseInt(process.env.DEFAULT_CHAT_COTEXT_LIMIT || "20")
         if(params.historyMessage.length > contextLimit){
             params.historyMessage = params.historyMessage.slice(-contextLimit)
+        }
+        // handle reGenerate
+        if(params.historyMessage.length >= 2 && params.reGenerate){
+            await messageService.deleteMessages(user.email, params.sessionId, 2)
+            params.historyMessage = params.historyMessage.slice(0, -2)
         }
     }
     if(!params.sessionId){

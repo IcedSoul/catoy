@@ -36,6 +36,10 @@ class MessageService {
         messages.addMessage(message).then()
     }
 
+    deleteMessages = async (userEmail: string, sessionId: string, count: number) => {
+        return messages.deleteMessageBySessionId(userEmail, sessionId, count)
+    }
+
 }
 
 export const messageService = new MessageService()

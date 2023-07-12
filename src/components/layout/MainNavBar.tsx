@@ -135,8 +135,8 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
     }
 
     const mainLinks = links.map((link) => (
-        <UnstyledButton key={link.label} className={styles.mainLink}>
-            <div className={styles.mainLinkInner} onClick={() => onChangeRoute(link.route)}>
+        <UnstyledButton key={link.label} className={styles.mainLink} onClick={() => onChangeRoute(link.route)}>
+            <div className={styles.mainLinkInner}>
                 <link.icon size={20} className={styles.mainLinkIcon} stroke={1.5} />
                 <span>{link.label}</span>
             </div>

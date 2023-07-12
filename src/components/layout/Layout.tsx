@@ -1,5 +1,5 @@
 import {
-    AppShell,
+    AppShell, Skeleton,
     useMantineTheme,
 } from '@mantine/core';
 import {MainNavBar} from "./MainNavBar";
@@ -12,6 +12,7 @@ interface LayoutProps {
 export default function Layout({children}: LayoutProps) {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
+    // const [pageLoading, setPageLoading] = useState(false);
 
     return (
         <AppShell
