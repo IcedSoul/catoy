@@ -1,6 +1,6 @@
 import {
     ActionIcon,
-    Container,
+    Container, CopyButton,
     createStyles,
     Flex,
     Grid,
@@ -18,8 +18,8 @@ import {
 
 import {
     IconBrandOpenai,
-    IconBrandTelegram,
-    IconClearFormatting,
+    IconBrandTelegram, IconCheck,
+    IconClearFormatting, IconCopy,
     IconRefresh,
     IconUfo
 } from "@tabler/icons-react";
@@ -41,6 +41,7 @@ import {
 import {getCookieByName, removeCookie} from "@/common/client/common";
 import {useGlobalContext} from "@/components/providers/GlobalContextProvider";
 import {notifications} from "@mantine/notifications";
+import {themeColor} from "@mantine/styles/lib/theme/functions/fns/theme-color/theme-color";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -119,9 +120,28 @@ const useStyles = createStyles((theme) => ({
             height: '1.0rem',
         },
     },
+    scrollArea: {
+        width: '100%',
+        "> div": {
+            width: '100%',
+        },
+        ".mantine-ScrollArea-root": {
+            width: '100%',
+        },
+        ".mantine-ScrollArea-viewport > div": {
+            width: '100%',
+            display: 'block!important',
+        },
+    },
     chatArea: {
         flexGrow: 1,
         overflow: "hidden"
+    },
+    chatText: {
+        whiteSpace: "pre-wrap",
+        wordBreak: "break-all",
+        overflowWrap: "break-word",
+        overflow: "hidden",
     },
     cursorPointer: {
         margin: "auto 0",
@@ -134,6 +154,9 @@ const useStyles = createStyles((theme) => ({
     bottomIcon: {
         paddingTop: theme.spacing.xs,
         paddingBottom: theme.spacing.xs,
+    },
+    copyButton: {
+        float: "right",
     }
 }));
 
@@ -230,6 +253,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                 setMessages((prev) => [...prev, resMessage])
                 setCurrentLoadingMessage(undefined)
                 setIsLoading(false)
+                setTimeout(() => scrollToBottom(), 50)
                 refreshSession?.()
                 break
             }
@@ -313,6 +337,10 @@ export const ChatGPT = ({}: ChatGPTProps) => {
         setCurrentModel(model)
     }
 
+    const copyCode = (code: string) => {
+
+    }
+
     const scrollToBottom = (behavior: ScrollBehavior = 'auto') =>
         scroll.current?.scrollTo({ top: scroll.current?.scrollHeight, behavior });
 
@@ -337,6 +365,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                 justify={message?.role === MessageSource.ASSISTANT ? "left" : "right"}
                 align={message?.role === MessageSource.ASSISTANT ? "flex-start" : "flex-end"}
                 direction={message?.role === MessageSource.ASSISTANT ? { base: 'column', xs: 'row'} : { base: 'column', xs: 'row-reverse'}}
+                w="100%"
             >
                 {
                     message?.role === MessageSource.ASSISTANT ? (
@@ -368,6 +397,7 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                     align="flex-start"
                     justify={message?.role === MessageSource.ASSISTANT ? "flex-start" : "flex-end"}
                     wrap="wrap"
+                    className={classes.chatText}
                 >
                     {/* eslint-disable-next-line react/no-children-prop */}
                     <ReactMarkdown children={ message?.content || ""}
@@ -376,21 +406,38 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                         components={{
                             code({node, inline, className, children, style, ...props}: CodeProps) {
                                 const match = /language-(\w+)/.exec(className || '')
-                                return !inline && match ? (
-                                    <SyntaxHighlighter
-                                        style={ tomorrow }
-                                        language={match[1]}
-                                        showLineNumbers
-                                        wrapLines
-                                        PreTag="div"
-                                        {...props}
-                                    >
-                                        {String(children).replace(/\n$/, '')}
-                                    </SyntaxHighlighter>
-                                ) : (
-                                    <code className={className} {...props}>
-                                        {children}
-                                    </code>
+                                return (
+                                    <>
+                                        {
+                                            !inline && match ? (
+                                                <div>
+                                                    <CopyButton value={children.toString()}>
+                                                        {({ copied, copy }) => (
+                                                            <Tooltip label={copied ? 'Copied' : 'Copy'} color={copied ? "teal" : "#2C2E33"} withArrow position="right">
+                                                                <ActionIcon className={classes.copyButton} variant="transparent" size="2rem" onClick={copy} disabled={isLoading}>
+                                                                    {copied ? <IconCheck size="1rem" /> : <IconCopy size="1rem" />}
+                                                                </ActionIcon>
+                                                            </Tooltip>
+                                                        )}
+                                                    </CopyButton>
+                                                    <SyntaxHighlighter
+                                                        style={ tomorrow }
+                                                        language={match[1]}
+                                                        showLineNumbers
+                                                        wrapLines
+                                                        PreTag="div"
+                                                        {...props}
+                                                    >
+                                                        {String(children).replace(/\n$/, '')}
+                                                    </SyntaxHighlighter>
+                                                </div>
+                                            ) : (
+                                                <code className={className} {...props}>
+                                                    {children}
+                                                </code>
+                                            )
+                                        }
+                                    </>
                                 )
                             }
                         }}
@@ -442,7 +489,13 @@ export const ChatGPT = ({}: ChatGPTProps) => {
                     spacing="lg"
                     className={classes.chatArea}
                 >
-                    <ScrollArea.Autosize h="100%" w="100%" viewportRef={scroll} scrollHideDelay={0}>
+                    <ScrollArea.Autosize
+                        h="100%"
+                        w="100%"
+                        viewportRef={scroll}
+                        scrollHideDelay={0}
+                        className={classes.scrollArea}
+                        >
                         <Stack justify="flex-end" align="self-start" w="100%" h="100%">
                                 {messageContents}
                         </Stack>

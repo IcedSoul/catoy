@@ -6,7 +6,7 @@ import {
     TextInput,
     UnstyledButton
 } from "@mantine/core";
-import {IconBrandHipchat, IconBrandVscode, IconNote, IconSearch} from "@tabler/icons-react";
+import {IconApps, IconBrandHipchat, IconBrandVscode, IconNote, IconSearch} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import Router from 'next/router'
 import {NavbarSession} from "@/components/chat/NavbarSession";
@@ -89,6 +89,7 @@ const links = [
     { icon: IconBrandHipchat, label: 'ChatGPT', route: '/chat' },
     { icon: IconBrandVscode, label: 'Completion', route: '/completion' },
     { icon: IconNote, label: 'Note', route: '/note' },
+    { icon: IconApps, label: 'Applications', route: '/apps' },
 ];
 
 const toys = [
@@ -107,7 +108,8 @@ export enum NavBarType {
     NONE,
     CHAT,
     COMPLETION,
-    NOTE
+    NOTE,
+    APPS
 }
 
 type NvaBarProps = {
@@ -127,6 +129,8 @@ export const MainNavBar = ({ opened, setOpened }: NvaBarProps) => {
             setNavBarType(NavBarType.COMPLETION)
         } else if(route === '/note'){
             setNavBarType(NavBarType.NOTE)
+        } else if(route === '/apps'){
+            setNavBarType(NavBarType.APPS)
         }
     }, [])
 

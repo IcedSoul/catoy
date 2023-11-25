@@ -110,7 +110,7 @@ export const HomeIndex = () => {
                                 </Text>{' '} Some  <br /> interesting toys
                             </Title>
                             <Text color="dimmed" mt="md">
-                                A interesting AI-based toolsets that can help you be more productive
+                                An interesting AI-based toolset that can help you be more productive
                             </Text>
 
                             <List
