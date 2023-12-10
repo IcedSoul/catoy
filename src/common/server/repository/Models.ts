@@ -17,6 +17,7 @@ export interface Session {
     sessionId: string,
     title: string,
     userEmail: string,
+    threadId?: string,
     limit?: number,
 }
 

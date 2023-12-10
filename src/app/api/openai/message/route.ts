@@ -6,13 +6,13 @@ import {AxiosResponse} from "axios";
 import {
     createWebReadableStreamResponse,
     getUserInfo,
-    OpenAiApi,
-    SupportModels
+    OpenAi,
 } from "@/common/server/CommonUtils";
 import {messageService} from "@/common/server/services/MessageService";
 import {randomUUID} from "crypto";
 import {sessionService} from "@/common/server/services/SessionService";
 import {checkAndFilterMessageHistory} from "@/common/server/utils/GPTUtils";
+import {SupportModels} from "@/common/server/openai/Models";
 
 interface GetMessageParams {
     model: string,
@@ -78,7 +78,7 @@ const getOpenAIResponse = (params: GetMessageParams): Promise<AxiosResponse> | n
 }
 
 const chat = (params: GetMessageParams): Promise<AxiosResponse> => {
-    return OpenAiApi.createChatCompletion({
+    return OpenAi.createChatCompletion({
         model: params.model,
         messages: [systemPrompt, ...params.historyMessage, params.message],
         stream: true,
@@ -88,7 +88,7 @@ const chat = (params: GetMessageParams): Promise<AxiosResponse> => {
 }
 
 const completion = (params: GetMessageParams): Promise<AxiosResponse> => {
-    return OpenAiApi.createCompletion({
+    return OpenAi.createCompletion({
         model: params.model,
         prompt: params.message.content,
         stream: true,

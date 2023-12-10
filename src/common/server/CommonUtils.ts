@@ -1,23 +1,24 @@
 import {IncomingMessage} from "http";
 import {ChatMessage, encoder, MessageSource, SessionUser} from "@/common/client/ChatGPTCommon";
-import {Configuration, OpenAIApi} from "openai";
+import {OpenAI} from "openai";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import {redirect} from "next/navigation";
 import {messageService} from "@/common/server/services/MessageService";
 import {NextResponse} from "next/server";
+import {RequestOptions} from "openai/src/core";
 
 
-const configuration = new Configuration({
-    organization: 'org-dgp2h4U3CLUur0pCnGGzkKBp',
-    apiKey: process.env.OPENAI_API_KEY,
-});
 
-export const OpenAiApi = new OpenAIApi(configuration)
+export const OpenAi = new OpenAI()
 
-export const SupportModels = {
-    completion: ['text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci', 'curie', 'babbage', 'ada'],
-    chat: ['gpt-3.5-turbo', 'gpt-4']
+export const DefaultResponseOptions: RequestOptions = {
+    maxRetries: 3,
+}
+
+export const StreamRequestOptions: RequestOptions = {
+    maxRetries: 3,
+    stream: true,
 }
 
 export const isGPT4 = (model: string): boolean => {

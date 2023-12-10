@@ -3,7 +3,7 @@ import {codeSegments} from "@/common/server/repository/CodeSegments";
 import {SessionUser} from "@/common/client/ChatGPTCommon";
 import {randomUUID} from "crypto";
 import {CodeCompleteParams} from "@/app/api/completion/code/complete/route";
-import {OpenAiApi, splitCode} from "@/common/server/CommonUtils";
+import {OpenAi, splitCode} from "@/common/server/CommonUtils";
 import {AxiosResponse} from "axios";
 
 class CodeSegmentService {
@@ -29,7 +29,7 @@ class CodeSegmentService {
 
     completeCode = (params: CodeCompleteParams): Promise<AxiosResponse> => {
         const {prompt, suffix} = splitCode(params.code, params.position)
-        return OpenAiApi.createCompletion({
+        return OpenAi.createCompletion({
             model: params.model,
             prompt: prompt,
             suffix: suffix,

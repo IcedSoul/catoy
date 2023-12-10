@@ -41,7 +41,6 @@ import {
 import {getCookieByName, removeCookie} from "@/common/client/common";
 import {useGlobalContext} from "@/components/providers/GlobalContextProvider";
 import {notifications} from "@mantine/notifications";
-import {themeColor} from "@mantine/styles/lib/theme/functions/fns/theme-color/theme-color";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -138,7 +137,6 @@ const useStyles = createStyles((theme) => ({
         overflow: "hidden"
     },
     chatText: {
-        whiteSpace: "pre-wrap",
         wordBreak: "break-all",
         overflowWrap: "break-word",
         overflow: "hidden",
@@ -159,6 +157,8 @@ const useStyles = createStyles((theme) => ({
         float: "right",
     }
 }));
+
+tomorrow['pre[class*="language-"]']['overflow'] = "hidden";
 
 interface ChatGPTProps {
 }
@@ -337,9 +337,6 @@ export const ChatGPT = ({}: ChatGPTProps) => {
         setCurrentModel(model)
     }
 
-    const copyCode = (code: string) => {
-
-    }
 
     const scrollToBottom = (behavior: ScrollBehavior = 'auto') =>
         scroll.current?.scrollTo({ top: scroll.current?.scrollHeight, behavior });

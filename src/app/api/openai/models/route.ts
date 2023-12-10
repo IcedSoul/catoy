@@ -1,4 +1,5 @@
-import {SupportModels} from "@/common/server/CommonUtils";
+import {SupportModels} from "@/common/server/openai/Models";
+
 
 export async function GET(request: Request) {
     const params = new URLSearchParams(new URL(request.url).searchParams)

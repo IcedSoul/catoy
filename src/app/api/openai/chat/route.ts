@@ -1,6 +1,6 @@
 import {ChatMessage, SessionUser} from "@/common/client/ChatGPTCommon";
 import {AxiosResponse} from "axios";
-import {createWebReadableStreamResponse, getUserInfo, OpenAiApi} from "@/common/server/CommonUtils";
+import {createWebReadableStreamResponse, getUserInfo, OpenAi} from "@/common/server/CommonUtils";
 import {messageService} from "@/common/server/services/MessageService";
 
 interface GetMessageParams {
@@ -20,7 +20,7 @@ export async function POST(request: Request){
 }
 
 const chat = (params: GetMessageParams, historyMessages: Array<ChatMessage>): Promise<AxiosResponse> => {
-    return OpenAiApi.createChatCompletion({
+    return OpenAi.createChatCompletion({
         model: params.model,
         messages: [...historyMessages, params.message],
         stream: true,
